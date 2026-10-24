@@ -82,14 +82,16 @@
   .hero-cta{display:flex;flex-direction:column;gap:12px;max-width:420px}
   .hero-cta .btn{width:100%;border-radius:14px;min-height:58px}
   .hero-cta .btn-call{font-size:19px}
-  .rating{margin-top:28px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .cta-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+  .cta-txt small{font-size:13px;font-weight:500;opacity:.92;margin-top:3px}
+  .hero-cta .btn-call{padding:12px 20px}
+  .assure{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;font-weight:600;color:var(--navy)}
+  .assure li{display:flex;align-items:center;gap:6px}
+  .assure .ic{color:var(--ok);font-size:16px}
+  @media(max-width:899px){.assure{justify-content:center}}
+  .rating{display:inline-block;text-decoration:none;margin-top:22px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .rating .stars{font-size:15px;margin-right:6px}
   @media(max-width:899px){.hero-grid > div:first-child{text-align:center}.hero p.lead{margin-left:auto;margin-right:auto}.hero-cta{margin:0 auto}}
-  .proof{display:none;flex-wrap:wrap;gap:10px 22px;margin-top:18px;font-size:15px}
-  @media(min-width:900px){.proof{display:flex}}
-  .proof div{display:flex;align-items:center;gap:8px}
-  .proof b{color:var(--navy)}
-  .proof .ic{color:var(--ok);font-size:18px}
   .stars{color:var(--star);letter-spacing:1px}
   .hero-img{border-radius:20px;overflow:hidden;border:5px solid #fff;box-shadow:var(--shadow-lg);position:relative}
   .hero-img img{display:block;width:100%;height:auto}
@@ -198,6 +200,11 @@
   @media(max-width:899px){.wa{display:none}}
   @media(min-width:900px){.callbar{display:none}footer{padding-bottom:36px}.wa{bottom:24px}}
 
+  #cookie-bar{position:fixed;left:12px;right:12px;bottom:12px;z-index:40;max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line-strong);border-radius:14px;box-shadow:var(--shadow-lg);padding:14px 16px;font-size:14px;color:var(--ink)}
+  #cookie-bar p{margin:0 0 10px}
+  #cookie-bar div{display:flex;gap:10px}
+  #cookie-bar button{flex:1;min-height:44px;border-radius:10px;font:600 15px Inter,sans-serif;cursor:pointer;border:2px solid var(--navy);background:#fff;color:var(--navy)}
+  #cookie-bar button[data-v="accept"]{background:var(--navy);color:#fff}
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dot{animation:none}.btn,.card,.callbar{transition:none}}
 </style>
 </head>
@@ -223,7 +230,7 @@
     <a class="brand" href="#" aria-label="Réseau Artisans France, accueil">
       <img class="brand-logo" src="assets/raf-logo.png" alt="RAF, Réseau Artisans France" width="640" height="256">
     </a>
-    <a class="btn btn-call js-call" href="tel:+33776425052" aria-label="Appeler le 07 76 42 50 52"><svg class="ic"><use href="#i-phone"/></svg><span class="num">07 76 42 50 52</span><span class="lbl">Appeler</span></a>
+    <a class="btn btn-call js-call" href="tel:+33776425052" aria-label="Appeler le 07 76 42 50 52"><svg class="ic"><use href="#i-phone"/></svg><span class="num js-num">07 76 42 50 52</span><span class="lbl">Appeler</span></a>
   </div>
 </header>
 
@@ -237,14 +244,15 @@
         <p class="lead">Fuite d'eau, WC bouché, chauffe-eau en panne ? <b>Prix annoncé au téléphone</b>, devis signé avant tout travaux.</p>
         <span class="status"><span class="dot"></span>Disponible maintenant · 24h/24, 7j/7</span>
         <div class="hero-cta" id="hero-cta">
-          <a class="btn btn-call js-call" href="tel:+33776425052"><svg class="ic"><use href="#i-phone"/></svg>Appeler le 07 76 42 50 52</a>
+          <a class="btn btn-call js-call" href="tel:+33776425052"><svg class="ic"><use href="#i-phone"/></svg><span class="cta-txt">Appeler un plombier<small><span class="js-num">07 76 42 50 52</span> · prix annoncé au tél.</small></span></a>
           <a class="btn btn-ghost" href="https://wa.me/33776425052?text=Bonjour%2C%20j%27ai%20un%20probl%C3%A8me%20de%20plomberie%20%C3%A0%20" target="_blank" rel="noopener"><svg class="ic"><use href="#i-msg"/></svg>Envoyer une photo (WhatsApp)</a>
         </div>
-        <p class="rating"><span class="stars" aria-hidden="true">★★★★★</span>5/5 sur Google</p>
-        <div class="proof">
-          <div><svg class="ic"><use href="#i-check"/></svg><span><b>Devis signé</b> avant intervention</span></div>
-          <div><svg class="ic"><use href="#i-check"/></svg><span><b>Paiement après</b> les travaux</span></div>
-        </div>
+        <ul class="assure">
+          <li><svg class="ic"><use href="#i-check"/></svg>Devis signé avant travaux</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Paiement après intervention</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Entreprise immatriculée (SIRET)</li>
+        </ul>
+        <a class="rating" href="#avis"><span class="stars" aria-hidden="true">★★★★★</span>5/5 · 4 avis Google</a>
       </div>
       <div class="hero-img">
         <img src="assets/plombier-intervention.jpg" alt="Plombier en intervention sur une canalisation" width="1200" height="800">
@@ -313,10 +321,10 @@
   </section>
 
   <!-- AVIS -->
-  <section class="alt">
+  <section class="alt" id="avis">
     <div class="wrap">
       <h2>Ils nous ont fait confiance</h2>
-      <p class="sub"><span class="stars" aria-hidden="true">★★★★★</span> <b>5,0/5</b> sur Google</p>
+      <p class="sub"><span class="stars" aria-hidden="true">★★★★★</span> <b>5,0/5</b> sur Google · 4 avis clients</p>
       <div class="grid g2">
         <figure class="card review"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div><blockquote>« Intervention rapide pour un problème de fuite d’eau. Travail propre et efficace, avec de bons conseils. Entreprise sérieuse et ponctuelle. Je recommande sans hésiter ! »</blockquote><figcaption><b>Zoulihka R.</b> · Avis Google · octobre 2026</figcaption></figure>
         <figure class="card review"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div><blockquote>« Très bonne expérience ! J’avais une urgence en plomberie et l’entreprise a été très réactive. Le plombier était ponctuel, professionnel et efficace. Le problème a été résolu rapidement et le travail est propre. »</blockquote><figcaption><b>Khadija B.</b> · Avis Google · octobre 2026</figcaption></figure>
@@ -375,7 +383,7 @@
       <p class="slogan">Un seul numéro, une seule équipe, <span>votre solution !</span></p>
       <h2>Une fuite, un WC bouché, plus d'eau chaude ?</h2>
       <p>Appelez maintenant : on vous annonce le prix et l'heure d'arrivée au téléphone.</p>
-      <a class="btn btn-call btn-lg js-call" href="tel:+33776425052"><svg class="ic"><use href="#i-phone"/></svg>07 76 42 50 52</a>
+      <a class="btn btn-call btn-lg js-call" href="tel:+33776425052"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">07 76 42 50 52</span></a>
     </div>
   </section>
 </main>
@@ -388,11 +396,12 @@
       Siège : 60 rue des Bouvreuils, 07100 Annonay<br>
       SIRET 105 406 755 00014 · RCS Aubenas 105 406 755 · TVA FR83105406755<br>
       E-mail : <a href="mailto:contact@reseauartisansfrance.com">contact@reseauartisansfrance.com</a><br>
-      Tél. <a class="js-call" href="tel:+33776425052">07 76 42 50 52</a>
+      Tél. <a class="js-call" href="tel:+33776425052"><span class="js-num">07 76 42 50 52</span></a>
     </div>
     <div>
       <a href="mentions-legales.html">Mentions légales</a><br>
       <a href="confidentialite.html">Politique de confidentialité</a><br>
+      <a href="#" class="js-cookies" hidden>Gérer les cookies</a>
       © 2026 Réseau Artisans France
     </div>
   </div>
@@ -441,5 +450,6 @@
   }).observe(cta);
 })();
 </script>
+<script src="assets/suivi-appels.js" defer></script>
 </body>
 </html>
