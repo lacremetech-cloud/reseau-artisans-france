@@ -44,16 +44,10 @@
 
   /* Header */
   header.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm)}
-  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:12px}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:74px;gap:12px}
   .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-  .brand-mark{height:34px;width:auto;display:block;flex:0 0 auto}
-  .brand-txt{display:flex;flex-direction:column;line-height:1;font-family:Montserrat,Inter,sans-serif}
-  .brand-txt{border-left:2px solid var(--line);padding-left:10px}
-  .brand-txt .w{font-size:10.5px;letter-spacing:.2em;font-weight:800;white-space:nowrap}
-  .brand-txt .w b{font-weight:800}.brand-txt .b1{color:var(--blue)}.brand-txt .b2{color:var(--navy)}.brand-txt .b3{color:var(--red)}
-  .brand-txt .m{font-family:Inter,sans-serif;font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:700;margin-top:5px;text-transform:uppercase}
-  .brand-txt .m i{display:inline-block;width:22px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--blue) 0 40%,#cfd6e2 40% 60%,var(--red) 60%)}
-  @media(max-width:639px){.brand-mark{height:28px}.brand-txt{display:none}}
+  .brand-logo{height:52px;width:auto;display:block}
+  @media(min-width:640px){.brand-logo{height:58px}}
 
   /* Buttons */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:999px;font-weight:700;text-decoration:none;cursor:pointer;min-height:48px;transition:background .18s ease,box-shadow .18s ease,transform .08s ease}
@@ -227,8 +221,7 @@
   <div class="tricolore"></div>
   <div class="wrap">
     <a class="brand" href="#" aria-label="Réseau Artisans France, accueil">
-      <img class="brand-mark" src="assets/raf-monogramme.png" alt="RAF" width="360" height="116">
-      <span class="brand-txt"><span class="w"><b class="b1">RÉSEAU</b> <b class="b2">ARTISANS</b> <b class="b3">FRANCE</b></span><span class="m">Plomberie · Électricité</span></span>
+      <img class="brand-logo" src="assets/raf-logo.png" alt="RAF, Réseau Artisans France" width="640" height="256">
     </a>
     <a class="btn btn-call js-call" href="tel:+33776425052" aria-label="Appeler le 07 76 42 50 52"><svg class="ic"><use href="#i-phone"/></svg><span class="num">07 76 42 50 52</span><span class="lbl">Appeler</span></a>
   </div>
@@ -240,7 +233,7 @@
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Urgence plomberie · Drôme-Ardèche</span>
-        <h1><span class="h1-top">Plombier en urgence à</span><span class="city" data-ville>Valence</span><span class="h1-sub">et alentours</span></h1>
+        <h1><span class="h1-top">Plombier en&nbsp;urgence&nbsp;à</span><span class="city" data-ville>Valence</span><span class="h1-sub">et alentours</span></h1>
         <p class="lead">Fuite d'eau, WC bouché, chauffe-eau en panne ? <b>Prix annoncé au téléphone</b>, devis signé avant tout travaux.</p>
         <span class="status"><span class="dot"></span>Disponible maintenant · 24h/24, 7j/7</span>
         <div class="hero-cta" id="hero-cta">
