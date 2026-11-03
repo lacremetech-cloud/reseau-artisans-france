@@ -73,6 +73,11 @@
   @media(max-width:359px){.eyebrow{white-space:normal;letter-spacing:.1em}.status{font-size:13px;padding:8px 12px}}
   .hero h1{margin:22px 0 18px;font-weight:900;letter-spacing:-.02em;line-height:1}
   .hero h1 .h1-top{display:block;font-size:clamp(24px,6.4vw,40px);text-transform:uppercase;line-height:1.05}
+  .hero h1 .near{display:block;color:var(--red);font-style:italic;font-size:clamp(38px,10vw,66px);line-height:1.02;margin-top:6px;padding-right:.08em;text-wrap:balance}
+  .hsteps{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:9px;font-weight:700;color:var(--navy);font-size:clamp(16px,2.2vw,18px)}
+  .hsteps li{display:flex;align-items:center;gap:10px}
+  .hsteps b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;flex:none}
+  @media(max-width:899px){.hsteps{align-items:center}.hsteps li{width:15.5em;max-width:100%;text-align:left}}
   .hero h1 .city{display:block;color:var(--red);font-style:italic;font-size:clamp(46px,14vw,84px);line-height:1.02;margin-top:4px;padding-right:.08em;overflow-wrap:anywhere}
   .hero h1 .city.long{font-size:clamp(32px,9vw,60px)}
   .hero h1 .h1-sub{display:block;font-size:clamp(16px,4vw,20px);color:var(--muted);font-family:Inter,sans-serif;font-weight:600;letter-spacing:0;margin-top:10px}
@@ -239,8 +244,13 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">Urgence plomberie · Drôme-Ardèche</span>
-        <h1><span class="h1-top">Plombier en&nbsp;urgence&nbsp;à</span><span class="city" data-ville>Valence</span><span class="h1-sub">et alentours</span></h1>
+        <span class="eyebrow">Dépannage plomberie urgent</span>
+        <h1><span class="h1-top">Plombier en&nbsp;urgence,</span><span class="near">juste à&nbsp;côté de&nbsp;chez&nbsp;vous</span></h1>
+        <ol class="hsteps">
+          <li><b>1</b>Vous appelez</li>
+          <li><b>2</b>Vous nous dites votre problème</li>
+          <li><b>3</b>On arrive</li>
+        </ol>
         <p class="lead">Fuite d'eau, WC bouché, chauffe-eau en panne ? <b>Prix annoncé au téléphone</b>, devis signé avant tout travaux.</p>
         <span class="status"><span class="dot"></span>Disponible maintenant · 24h/24, 7j/7</span>
         <div class="hero-cta" id="hero-cta">
@@ -352,7 +362,7 @@
   <section class="alt" id="zones">
     <div class="wrap">
       <h2>Zones d'intervention</h2>
-      <p class="sub">Valence et environ 20 km autour, côté Drôme et côté Ardèche.</p>
+      <p class="sub"><span data-ville>Valence</span> et environ 20&nbsp;km autour, côté Drôme et côté Ardèche.</p>
       <div class="chips">
         <span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Valence</span><span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Bourg-lès-Valence</span><span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Portes-lès-Valence</span>
         <span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Guilherand-Granges</span><span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Saint-Péray</span><span class="chip"><svg class="ic"><use href="#i-pin"/></svg>Chabeuil</span>
