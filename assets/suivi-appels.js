@@ -7,8 +7,8 @@
    - LABEL_APPEL : libellé de la conversion « Appel depuis le site » (numéro de transfert Google)
    Le tag Google n'est chargé qu'après « Accepter » (mode de consentement de base). */
 (function(){
-  var ADS_ID="AW-18282575612", LABEL_CLIC="", LABEL_WA="", LABEL_APPEL="6FL2CPi9p6gdEPzt541E";
-  var NUMERO="06 44 82 66 86", CLE="raf-consent";
+  var ADS_ID="AW-18282575612", LABEL_CLIC="6WyhCOHqzLIdEPzt541E", LABEL_WA="Y0iUCOTqzLIdEPzt541E", LABEL_APPEL="6FL2CPi9p6gdEPzt541E";
+  var NUMERO="06 23 83 20 29", CLE="raf-consent";
   if(!ADS_ID) return;
   document.querySelectorAll(".js-cookies").forEach(function(l){l.hidden=false;});
 
