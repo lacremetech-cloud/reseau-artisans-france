@@ -13,6 +13,13 @@ REVIEWS = [
  ("Très bonne expérience ! J’avais une urgence en plomberie et l’entreprise a été très réactive. Le plombier était ponctuel, professionnel et efficace. Le problème a été résolu rapidement et le travail est propre.", "Khadija B."),
  ("Technicien excellent, irréprochable, très agréable, souriant. Je vous recommande fortement l’entreprise, entreprise très sérieuse.", "Anthony M."),
 ]
+TRUST = [
+ ("🇫🇷", "Entreprise locale", "Des artisans de la Drôme et de l'Ardèche, pas une plateforme ni un centre d'appel."),
+ ("🛠", "Plus de 10 ans d'expérience", "Des professionnels qui connaissent leur métier et vous conseillent honnêtement."),
+ ("💶", "Au prix juste", "Un devis gratuit, écrit et détaillé poste par poste. Pas de surprise sur la facture."),
+ ("⚡", "Rapide et propre", "On intervient vite, on protège votre intérieur et on laisse les lieux propres."),
+ ("📅", "Délais respectés", "La date des travaux est fixée avec vous, et on s'y tient."),
+]
 ZONES = ["Valence", "Bourg-lès-Valence", "Romans-sur-Isère", "Guilherand-Granges", "Saint-Péray", "Tournon-sur-Rhône", "Tain-l'Hermitage", "Chabeuil", "Crest", "Montélimar", "Grenoble", "Échirolles"]
 
 
@@ -28,6 +35,7 @@ def page(p):
     photos = "".join(f'<img src="../assets/{f}" alt="{a}" width="800" height="1000" loading="lazy">' for f, a in p["photos"])
     revs = "".join(f'<figure class="card review" style="margin:0"><div class="stars">★★★★★</div><blockquote>« {t} »</blockquote><figcaption><b>{n}</b> · Avis Google · octobre 2026</figcaption></figure>' for t, n in REVIEWS)
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in p["faq"])
+    trust = "".join(f'<div class="trust-item"><span class="t-ic" aria-hidden="true">{i}</span><div><b>{t}</b><p>{d}</p></div></div>' for i, t, d in TRUST)
     zones = "".join(f'<span class="chip">{z}</span>' for z in ZONES)
     return f"""<!doctype html>
 <html lang="fr">
@@ -93,6 +101,11 @@ def page(p):
       <a class="btn btn-navy js-call" href="tel:{TEL}">Pressé ? Appelez le <span class="js-num">{TELH}</span></a>
     </div>
   </form>
+</div></section>
+
+<section class="trust"><div class="wrap">
+  <h2>Pourquoi nous faire confiance</h2>
+  <div class="trust-grid">{trust}</div>
 </div></section>
 
 <section class="alt"><div class="wrap">
@@ -161,7 +174,7 @@ SDB = dict(
  eyebrow="Rénovation salle de bain · Drôme · Ardèche · Isère",
  h1="Votre salle de bain refaite <em>de A à Z</em>, par un artisan près de chez vous",
  lead="Baignoire remplacée par une douche, salle de bain complète, WC : <b>un seul interlocuteur</b> s'occupe de la plomberie, du carrelage et des finitions.",
- ticks=["Visite et devis gratuits à domicile", "Un seul artisan pour tout le chantier", "Devis écrit et détaillé avant de commencer"],
+ ticks=["Entreprise locale, plus de 10 ans d\'expérience", "Au prix juste : devis gratuit et détaillé", "Travail rapide et propre, délais respectés", "Un seul artisan pour tout le chantier"],
  before="sdb-avant.jpg", before_alt="Salle de bain avec baignoire avant rénovation", after="sdb-apres.jpg", after_alt="La même salle de bain rénovée avec une douche à l'italienne",
  form_title="Votre devis gratuit", form_hint="2 minutes. Un artisan vous rappelle pour fixer la visite.",
  projets=["Salle de bain complète", "Baignoire → douche", "Rénovation WC", "Autre projet"],
@@ -188,7 +201,7 @@ CH = dict(
  eyebrow="Chaudière gaz · Drôme · Ardèche · Isère",
  h1="Chaudière en panne ou trop vieille ? <em>On la remplace.</em>",
  lead="Dépannage, remplacement de chaudière gaz, entretien : <b>un chauffagiste près de chez vous</b> vient voir, vous explique et vous donne un devis clair.",
- ticks=["Visite et devis gratuits", "Dépose, pose et mise en service comprises dans le devis", "Devis écrit avant le début des travaux"],
+ ticks=["Chauffagistes locaux, plus de 10 ans d\'expérience", "Au prix juste : devis gratuit et détaillé", "Intervention rapide et propre", "Dépose, pose et mise en service comprises dans le devis"],
  before="ch-avant.jpg", before_alt="Ancienne chaudière gaz murale", after="ch-apres.jpg", after_alt="Chaudière gaz neuve installée au même endroit",
  form_title="Votre devis chaudière", form_hint="2 minutes. Un chauffagiste vous rappelle rapidement.",
  projets=["Remplacer ma chaudière", "Chaudière en panne", "Entretien annuel", "Autre demande"],

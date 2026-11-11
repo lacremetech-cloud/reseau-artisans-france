@@ -84,3 +84,12 @@ footer{background:#071629;color:#b7c4d6;font-size:14px;padding:34px 0 100px;line
 #cookie-bar button{flex:1;min-height:44px;border-radius:10px;font:600 15px Inter,sans-serif;cursor:pointer;border:2px solid var(--navy);background:#fff;color:var(--navy)}
 #cookie-bar button[data-v="accept"]{background:var(--navy);color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.stickycta{transition:none}}
+.trust{padding:44px 0;background:#fff;border-bottom:1px solid var(--line)}
+.trust h2{text-align:center;margin-bottom:22px}
+.trust-grid{display:grid;gap:12px}
+@media(min-width:700px){.trust-grid{grid-template-columns:repeat(5,1fr)}}
+.trust-item{display:flex;gap:12px;align-items:flex-start;background:var(--tint);border-radius:14px;padding:16px}
+@media(min-width:700px){.trust-item{flex-direction:column;text-align:center;align-items:center}}
+.t-ic{font-size:28px;line-height:1}
+.trust-item b{display:block;color:var(--navy);font-family:Montserrat,Inter,sans-serif;font-size:16px;margin-bottom:2px}
+.trust-item p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
