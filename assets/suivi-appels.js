@@ -80,7 +80,7 @@
     var old=document.getElementById("cookie-bar"); if(old) old.remove();
     var d=document.createElement("div");
     d.id="cookie-bar"; d.setAttribute("role","dialog"); d.setAttribute("aria-label","Cookies");
-    d.innerHTML='<p>Nous utilisons des cookies Google Ads, Meta (Facebook, Instagram) et Microsoft Clarity pour savoir quelles annonces génèrent des appels et améliorer le site. <a href="confidentialite.html">En savoir plus</a></p>'+
+    d.innerHTML='<p>Nous utilisons des cookies Google Ads, Meta (Facebook, Instagram) et Microsoft Clarity pour savoir quelles annonces génèrent des appels et améliorer le site. <a href="/confidentialite.html">En savoir plus</a></p>'+
       '<div><button type="button" data-v="refuse">Refuser</button><button type="button" data-v="accept">Accepter</button></div>';
     d.addEventListener("click",function(e){
       var v=e.target.getAttribute&&e.target.getAttribute("data-v"); if(!v) return;
