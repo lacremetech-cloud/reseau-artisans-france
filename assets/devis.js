@@ -28,6 +28,12 @@
     body.set("page", form.dataset.page);
     ["nom","tel","ville","projet","delai","message"].forEach(function(k){ body.set(k, (fd.get(k)||"").toString().trim()); });
     body.set("source", source());
+    try{
+      var q = new URLSearchParams(location.search);
+      body.set("utm_source", q.get("utm_source") || (q.get("fbclid") ? "meta" : (q.get("gclid") ? "google" : "")));
+      body.set("utm_campaign", q.get("utm_campaign") || "");
+      body.set("utm_content", q.get("utm_content") || "");
+    }catch(e){}
 
     btn.disabled = true; btn.textContent = "Envoi…";
     fetch(HOOK, {method:"POST", mode:"no-cors", body: body})
