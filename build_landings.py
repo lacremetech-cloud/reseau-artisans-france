@@ -28,6 +28,15 @@ def opts(name, items, required=False):
     return '<div class="opts">' + "".join(f'<label><input type="radio" name="{name}" value="{v}"{r}>{v}</label>' for v in items) + '</div>'
 
 
+def slider(before, after, alt_b, alt_a, eager=False):
+    lz = '' if eager else ' loading="lazy"'
+    return (f'<div class="cmp" style="--pos:50%">'
+            f'<img src="../assets/{after}" alt="{alt_a}" width="900" height="1116"{lz}>'
+            f'<div class="cmp-b"><img src="../assets/{before}" alt="{alt_b}" width="900" height="1116"{lz}></div>'
+            f'<span class="lab av">AVANT</span><span class="lab ap">APRÈS</span><span class="cmp-h" aria-hidden="true"></span>'
+            f'<input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après"></div>')
+
+
 def page(p):
     steps = "".join(f'<div class="card step"><h3>{t}</h3><p>{d}</p></div>' for t, d in p["steps"])
     done = "".join(f"<li>{CHK}{x}</li>" for x in p["list"])
@@ -36,6 +45,7 @@ def page(p):
     revs = "".join(f'<figure class="card review" style="margin:0"><div class="stars">★★★★★</div><blockquote>« {t} »</blockquote><figcaption><b>{n}</b> · Avis Google · octobre 2026</figcaption></figure>' for t, n in REVIEWS)
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in p["faq"])
     trust = "".join(f'<div class="trust-item"><span class="t-ic" aria-hidden="true">{i}</span><div><b>{t}</b><p>{d}</p></div></div>' for i, t, d in TRUST)
+    gallery = "".join(slider(b, a, ab, aa) for b, a, ab, aa in p.get("gallery", []))
     zones = "".join(f'<span class="chip">{z}</span>' for z in ZONES)
     return f"""<!doctype html>
 <html lang="fr">
@@ -51,10 +61,10 @@ def page(p):
 <meta property="og:description" content="{p['desc']}">
 <meta property="og:image" content="https://reseauartisansfrance.com/assets/{p['after']}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/landing.css">
 </head>
-<body>
+<body class="brut">
 {ICONS}
 <header class="top"><div class="tricolore"></div><div class="wrap">
   <a href="/" aria-label="Réseau Artisans France, accueil"><img class="brand-logo" src="../assets/raf-logo.png" alt="RAF, Réseau Artisans France" width="640" height="256"></a>
@@ -68,11 +78,8 @@ def page(p):
     <h1>{p['h1']}</h1>
     <p class="lead">{p['lead']}</p>
     <ul class="ticks">{ticks}</ul>
-    <div class="ba">
-      <figure><img src="../assets/{p['before']}" alt="{p['before_alt']}" width="800" height="1000"><span class="lab av">Avant</span></figure>
-      <figure><img src="../assets/{p['after']}" alt="{p['after_alt']}" width="800" height="1000"><span class="lab ap">Après</span></figure>
-    </div>
-    <p class="illus">Photos d'illustration.</p>
+    {slider(p['before'], p['after'], p['before_alt'], p['after_alt'], eager=True)}
+    <p class="illus">Faites glisser pour comparer · {p['illus']}</p>
   </div>
 
   <form class="form-card" id="devis" data-page="{p['slug']}" data-cta="{p['cta']}" novalidate>
@@ -103,6 +110,8 @@ def page(p):
     </div>
   </form>
 </div></section>
+
+{('<section class="gal"><div class="wrap"><h2>' + p['gal_title'] + '</h2><p class="sub">' + p['gal_sub'] + '</p><div class="gal-grid">' + gallery + '</div><p class="illus">' + p['illus'] + '</p></div></section>') if gallery else ''}
 
 <section class="trust"><div class="wrap">
   <h2>Pourquoi nous faire confiance</h2>
@@ -162,6 +171,7 @@ def page(p):
   <a class="btn btn-navy js-call" href="tel:{TEL}" aria-label="Appeler"><svg class="ic"><use href="#i-phone"/></svg></a>
 </div>
 <script src="../assets/devis.js" defer></script>
+<script>document.querySelectorAll(".cmp input").forEach(function(r){{r.addEventListener("input",function(){{r.parentNode.style.setProperty("--pos",r.value+"%");}});}});</script>
 <script src="../assets/suivi-appels.js" defer></script>
 </body>
 </html>
@@ -172,11 +182,16 @@ SDB = dict(
  slug="salle-de-bain",
  title="Rénovation de salle de bain – Drôme, Ardèche, Grenoble | Réseau Artisans France",
  desc="Rénovation complète de salle de bain et WC, remplacement de baignoire par une douche. Un seul artisan du début à la fin. Visite et devis gratuits à domicile.",
- eyebrow="Rénovation salle de bain · Drôme · Ardèche · Isère",
- h1="Votre salle de bain refaite <em>de A à Z</em>, par un artisan près de chez vous",
- lead="Baignoire remplacée par une douche, salle de bain complète, WC : <b>un seul interlocuteur</b> s'occupe de la plomberie, du carrelage et des finitions.",
- ticks=["Entreprise locale, plus de 10 ans d\'expérience", "Au prix juste : devis gratuit et détaillé", "Travail rapide et propre, délais respectés", "Un seul artisan pour tout le chantier"],
- before="sdb-avant.jpg", before_alt="Salle de bain avec baignoire avant rénovation", after="sdb-apres.jpg", after_alt="La même salle de bain rénovée avec une douche à l'italienne",
+ eyebrow="Valence · Drôme · Ardèche · Grenoble",
+ h1="Il est temps de refaire <em>votre salle de bain.</em>",
+ lead="Baignoire remplacée par une douche, salle de bain complète, WC : <b>on s'occupe de tout</b>, plomberie, carrelage et finitions.",
+ ticks=["Prix juste : devis gratuit, détaillé, sans surprise", "Intervention professionnelle, un seul artisan de A à Z", "Délais respectés : la date est fixée avec vous", "Entreprise locale, plus de 10 ans d\'expérience"],
+ before="ba3-avant.jpg", before_alt="Salle de bain des années 80 avec baignoire carrelée et lavabo colonne", after="ba3-apres.jpg", after_alt="La même salle de bain refaite avec une douche à l'italienne et un meuble vasque",
+ illus="Images d'illustration : exemples de transformation.",
+ gal_title="Avant / après : ce qu'on peut faire chez vous", gal_sub="Baignoire remplacée par une douche, douche plain-pied sécurisée, salle de bain complète.",
+ gallery=[("ba2-avant.jpg", "ba2-apres.jpg", "Salle de bain rose avec baignoire", "Douche plain-pied avec siège et barre d'appui"),
+          ("ba4-avant.jpg", "ba4-apres.jpg", "Petite salle de bain avec baignoire et WC", "Douche vitrée, WC suspendu et meuble bois"),
+          ("ba1-avant.jpg", "ba1-apres.jpg", "Salle de bain avec baignoire et rideau", "Douche à l'italienne et meuble chêne")],
  form_title="Votre devis gratuit", form_hint="2 minutes. Un artisan vous rappelle pour fixer la visite.",
  projets=["Salle de bain complète", "Baignoire → douche", "Rénovation WC", "Autre projet"],
  delais=["Dès que possible", "Dans 1 à 3 mois", "Plus tard", "Je me renseigne"],
@@ -192,7 +207,7 @@ SDB = dict(
       ("Est-ce que je dois acheter les équipements moi-même ?", "Non. On peut fournir et poser l'ensemble. Si vous avez déjà choisi certains équipements, on en discute à la visite."),
       ("La visite et le devis sont-ils vraiment gratuits ?", "Oui, sans engagement."),
       ("Intervenez-vous dans ma commune ?", "Nous intervenons dans la Drôme, le nord de l'Ardèche et l'agglomération de Grenoble. Indiquez votre commune dans le formulaire : on vous dit tout de suite si c'est possible.")],
- final_title="Prêt à changer de salle de bain ?", final_sub="Décrivez votre projet en 2 minutes : un artisan vous rappelle pour fixer la visite gratuite.",
+ final_title="Il est temps de refaire votre salle de bain.", final_sub="Décrivez votre projet en 2 minutes : un artisan vous rappelle pour fixer la visite gratuite.",
 )
 
 CH = dict(
@@ -202,8 +217,8 @@ CH = dict(
  eyebrow="Chaudière gaz · Drôme · Ardèche · Isère",
  h1="Chaudière en panne ou trop vieille ? <em>On la remplace.</em>",
  lead="Dépannage, remplacement de chaudière gaz, entretien : <b>un chauffagiste près de chez vous</b> vient voir, vous explique et vous donne un devis clair.",
- ticks=["Chauffagistes locaux, plus de 10 ans d\'expérience", "Au prix juste : devis gratuit et détaillé", "Intervention rapide et propre", "Dépose, pose et mise en service comprises dans le devis"],
- before="ch-avant.jpg", before_alt="Ancienne chaudière gaz murale", after="ch-apres.jpg", after_alt="Chaudière gaz neuve installée au même endroit",
+ ticks=["Prix juste : devis gratuit, détaillé, sans surprise", "Intervention professionnelle et propre", "Dépose, pose et mise en service comprises", "Chauffagistes locaux, plus de 10 ans d\'expérience"],
+ before="ch-avant.jpg", before_alt="Ancienne chaudière gaz murale", after="ch-apres.jpg", after_alt="Chaudière gaz neuve installée au même endroit", illus="Photos d'illustration.",
  form_title="Votre devis chaudière", form_hint="2 minutes. Un chauffagiste vous rappelle rapidement.",
  projets=["Remplacer ma chaudière", "Chaudière en panne", "Entretien annuel", "Autre demande"],
  delais=["Urgent", "Dans le mois", "Avant l'hiver prochain", "Je me renseigne"],

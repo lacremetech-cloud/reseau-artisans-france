@@ -12,10 +12,10 @@
 <meta property="og:description" content="Chaudière en panne ou trop ancienne ? Remplacement de chaudière gaz : dépose, pose et mise en service. Visite et devis gratuits.">
 <meta property="og:image" content="https://reseauartisansfrance.com/assets/ch-apres.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/landing.css">
 </head>
-<body>
+<body class="brut">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
@@ -31,12 +31,9 @@
     <span class="eyebrow">Chaudière gaz · Drôme · Ardèche · Isère</span>
     <h1>Chaudière en panne ou trop vieille ? <em>On la remplace.</em></h1>
     <p class="lead">Dépannage, remplacement de chaudière gaz, entretien : <b>un chauffagiste près de chez vous</b> vient voir, vous explique et vous donne un devis clair.</p>
-    <ul class="ticks"><li><svg class="ic"><use href="#i-check"/></svg><span>Chauffagistes locaux, plus de 10 ans d'expérience</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Au prix juste : devis gratuit et détaillé</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Intervention rapide et propre</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Dépose, pose et mise en service comprises dans le devis</span></li></ul>
-    <div class="ba">
-      <figure><img src="../assets/ch-avant.jpg" alt="Ancienne chaudière gaz murale" width="800" height="1000"><span class="lab av">Avant</span></figure>
-      <figure><img src="../assets/ch-apres.jpg" alt="Chaudière gaz neuve installée au même endroit" width="800" height="1000"><span class="lab ap">Après</span></figure>
-    </div>
-    <p class="illus">Photos d'illustration.</p>
+    <ul class="ticks"><li><svg class="ic"><use href="#i-check"/></svg><span>Prix juste : devis gratuit, détaillé, sans surprise</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Intervention professionnelle et propre</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Dépose, pose et mise en service comprises</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Chauffagistes locaux, plus de 10 ans d'expérience</span></li></ul>
+    <div class="cmp" style="--pos:50%"><img src="../assets/ch-apres.jpg" alt="Chaudière gaz neuve installée au même endroit" width="900" height="1116"><div class="cmp-b"><img src="../assets/ch-avant.jpg" alt="Ancienne chaudière gaz murale" width="900" height="1116"></div><span class="lab av">AVANT</span><span class="lab ap">APRÈS</span><span class="cmp-h" aria-hidden="true"></span><input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après"></div>
+    <p class="illus">Faites glisser pour comparer · Photos d'illustration.</p>
   </div>
 
   <form class="form-card" id="devis" data-page="chaudiere" data-cta="Recevoir mon devis gratuit" novalidate>
@@ -67,6 +64,8 @@
     </div>
   </form>
 </div></section>
+
+
 
 <section class="trust"><div class="wrap">
   <h2>Pourquoi nous faire confiance</h2>
@@ -126,6 +125,7 @@
   <a class="btn btn-navy js-call" href="tel:+33623832029" aria-label="Appeler"><svg class="ic"><use href="#i-phone"/></svg></a>
 </div>
 <script src="../assets/devis.js" defer></script>
+<script>document.querySelectorAll(".cmp input").forEach(function(r){r.addEventListener("input",function(){r.parentNode.style.setProperty("--pos",r.value+"%");});});</script>
 <script src="../assets/suivi-appels.js" defer></script>
 </body>
 </html>
