@@ -25,23 +25,23 @@ COMMUNES = {
 
 PROBLEMES = [
  dict(slug="fuite-d-eau", nom="Fuite d'eau", h1="Fuite d'eau ?", short="fuite d'eau",
-      title="Fuite d'eau : plombier en urgence 24h/24", lead="Fuite sous l'évier, tuyau percé, dégât des eaux, compteur qui tourne : <b>un plombier vient couper, trouver l'origine et réparer</b>, au prix annoncé au téléphone.",
+      title="Fuite d'eau : plombier en urgence 24h/24", lead="Fuite sous l'évier, tuyau percé, dégât des eaux, compteur qui tourne : <b>un plombier vient couper, trouver l'origine et réparer</b>, au prix juste.",
       symptomes=["De l'eau qui coule sous l'évier, le lavabo ou le WC", "Une tache d'humidité au plafond ou sur un mur", "Le compteur d'eau qui tourne alors que tout est fermé", "Une facture d'eau qui grimpe sans raison", "Un dégât des eaux chez vous ou chez le voisin du dessous"],
       etapes=["On vous aide au téléphone à couper l'eau pour limiter les dégâts", "Sur place, on localise l'origine de la fuite, sans tout casser quand c'est possible", "On répare : raccord, joint, tuyau, robinetterie", "On vous remet une facture détaillée et un rapport pour votre assurance"],
       faq=[("Ma recherche de fuite est-elle prise en charge par l'assurance ?", "En cas de dégât des eaux, la recherche de fuite est souvent couverte par l'assurance habitation. Nous vous remettons le rapport et la facture. Vérifiez auprès de votre assureur."),
            ("Que faire tout de suite en cas de fuite ?", "Coupez l'arrivée d'eau générale (souvent près du compteur), coupez l'électricité si l'eau approche des prises, et prenez des photos pour l'assurance."),
            ("Pouvez-vous trouver une fuite invisible ?", "Oui : quand le compteur tourne sans raison ou qu'une tache apparaît, on cherche l'origine de la fuite avant de réparer.")]),
  dict(slug="debouchage", nom="WC et canalisations bouchés", h1="WC ou canalisation bouché ?", short="débouchage",
-      title="Débouchage WC, évier, canalisation : plombier en urgence", lead="WC bouché, évier qui ne s'écoule plus, douche qui déborde, mauvaises odeurs : <b>un plombier débouche avec du matériel professionnel</b>, au prix annoncé au téléphone.",
+      title="Débouchage WC, évier, canalisation : plombier en urgence", lead="WC bouché, évier qui ne s'écoule plus, douche qui déborde, mauvaises odeurs : <b>un plombier débouche avec du matériel professionnel</b>, au prix juste.",
       symptomes=["Le WC qui déborde ou se vide très lentement", "L'évier, le lavabo ou la douche qui ne s'écoule plus", "Des gargouillis et des remontées d'odeurs", "Plusieurs appareils bouchés en même temps (canalisation principale)", "Un regard extérieur qui déborde"],
       etapes=["Au téléphone, on vous dit quoi ne pas faire (pas de produit chimique, pas de chasse d'eau en boucle)", "Sur place, débouchage manuel ou au furet selon le cas", "Pour les canalisations très encrassées : curage ou hydrocurage", "Si le bouchon revient, inspection par caméra pour trouver la cause"],
       faq=[("Faut-il verser un déboucheur chimique en attendant ?", "Évitez : ces produits abîment les canalisations et peuvent brûler en cas de projection. Ne tirez pas la chasse en boucle si le WC déborde."),
            ("Le débouchage est-il à la charge du propriétaire ou du locataire ?", "En général, le débouchage courant est à la charge du locataire, sauf si la cause vient d'un défaut de l'installation. On vous remet une facture détaillée."),
            ("Pourquoi mon WC se bouche-t-il souvent ?", "Lingettes, pente insuffisante, canalisation entartrée ou abîmée : une inspection par caméra permet de trouver la vraie cause.")]),
  dict(slug="chauffe-eau-en-panne", nom="Chauffe-eau en panne", h1="Chauffe-eau en panne ?", short="chauffe-eau",
-      title="Chauffe-eau en panne : dépannage et remplacement rapide", lead="Plus d'eau chaude, ballon qui fuit, disjoncteur qui saute : <b>un plombier diagnostique, répare ou remplace votre chauffe-eau</b>, au prix annoncé au téléphone.",
+      title="Chauffe-eau en panne : dépannage et remplacement rapide", lead="Plus d'eau chaude, ballon qui fuit, disjoncteur qui saute : <b>un plombier diagnostique, répare ou remplace votre chauffe-eau</b>, au prix juste.",
       symptomes=["Plus d'eau chaude du tout, ou eau tiède", "De l'eau qui coule sous le ballon ou par le groupe de sécurité", "Le disjoncteur du chauffe-eau qui saute", "Un ballon qui fait du bruit ou une eau couleur rouille", "Un chauffe-eau de plus de 10 ans qui chauffe mal"],
-      etapes=["Au téléphone : on vous fait vérifier le disjoncteur et on vous donne le prix du déplacement et du diagnostic", "Sur place : diagnostic (résistance, thermostat, groupe de sécurité, anode)", "On vous dit franchement s'il vaut mieux réparer ou remplacer", "En cas de remplacement : devis clair, dépose de l'ancien ballon et pose du nouveau"],
+      etapes=["Au téléphone : on vous fait vérifier le disjoncteur et on vous dit si on peut venir et quand", "Sur place : diagnostic (résistance, thermostat, groupe de sécurité, anode)", "On vous dit franchement s'il vaut mieux réparer ou remplacer", "En cas de remplacement : devis clair, dépose de l'ancien ballon et pose du nouveau"],
       faq=[("Faut-il réparer ou remplacer mon chauffe-eau ?", "Ça dépend de son âge et de la panne : une résistance ou un thermostat se remplacent ; une cuve qui fuit impose le remplacement. On vous le dit franchement après diagnostic."),
            ("Mon chauffe-eau fuit, que faire ?", "Coupez l'alimentation électrique du ballon au tableau, fermez l'arrivée d'eau froide du chauffe-eau, et appelez-nous."),
            ("Remplacez-vous le chauffe-eau dans la journée ?", "Quand le modèle est disponible, oui c'est souvent possible. On vous le confirme au téléphone.")]),
@@ -75,7 +75,7 @@ def page(p, lieu):
     url = f"{SITE}/{slug}/"
     where = f" à {V}" if V else " en Drôme, Ardèche et Isère"
     title = f"{p['title']}{(' à ' + V) if V else ''} | Réseau Artisans France"
-    desc = f"{p['nom']}{where} ? Plombier disponible 24h/24 et 7j/7, prix annoncé au téléphone avant de venir. Entreprise locale basée à Annonay."
+    desc = f"{p['nom']}{where} ? Plombier disponible 24h/24 et 7j/7, au prix juste. Entreprise locale basée à Annonay."
     s = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", s, count=1, flags=re.S)
     s = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{desc}">', s, count=1)
     s = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', s, count=1)
@@ -95,7 +95,7 @@ def page(p, lieu):
         <div class="card"><h3>Vous reconnaissez ces signes ?</h3><ul>{"".join(f"<li>{x}</li>" for x in p["symptomes"])}</ul></div>
         <div class="card"><h3>Comment on intervient</h3><ol>{"".join(f"<li>{x}</li>" for x in p["etapes"])}</ol></div>
       </div>
-      <p class="sub">Le prix vous est annoncé au téléphone avant de venir, puis confirmé par un devis écrit avant les travaux. Paiement après intervention.</p>
+      <p class="sub">On travaille au prix juste : devis écrit avant les travaux, paiement après intervention.</p>
       <p>Voir aussi : {others}. {villes}.</p>
     </div>
   </section>

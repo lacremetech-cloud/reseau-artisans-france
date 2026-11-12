@@ -52,7 +52,7 @@ VILLES = [
              "Dans les villages autour, de Mauves à Saint-Jean-de-Muzols, on intervient surtout sur des maisons individuelles : chauffe-eau, fuites, recherche de fuite quand le compteur tourne sans raison.",
              "Pour les projets, on se déplace aussi pour une visite gratuite : salle de bain, remplacement de baignoire par une douche, chaudière gaz."],
       faq=[("Intervenez-vous à Tournon et à Tain ?", "Oui, des deux côtés du Rhône : Tournon-sur-Rhône, Tain-l'Hermitage, Mauves, Saint-Jean-de-Muzols, Glun, Vion…"),
-           ("Le déplacement est-il plus cher pour Tournon ?", "Le prix vous est annoncé au téléphone avant de venir, déplacement compris. Pas de surprise sur la facture.")]),
+           ("Le déplacement est-il plus cher pour Tournon ?", "On travaille au prix juste, déplacement compris dans le devis. Pas de surprise sur la facture.")]),
  dict(slug="plombier-tain-l-hermitage", ville="Tain-l'Hermitage", cp="26600", dep="Drôme",
       quartiers=["Centre", "Les Rochas", "La Plaine", "Les Granges"],
       voisines=["Tournon-sur-Rhône", "Mercurol-Veaunes", "Chanos-Curson", "Érôme", "Crozes-Hermitage", "Pont-de-l'Isère", "Beaumont-Monteux"],
@@ -68,7 +68,7 @@ VILLES = [
       intro="Nous intervenons à Grenoble et dans toute l'agglomération, pour les urgences comme pour les projets.",
       local=["Dans les immeubles du centre, de l'Île Verte ou de Championnet, beaucoup de colonnes et d'évacuations sont anciennes : fuites sur raccords, dégâts des eaux chez le voisin du dessous et canalisations bouchées font partie des interventions les plus courantes.",
              "Dans l'agglomération, d'Échirolles à Meylan en passant par Saint-Martin-d'Hères et Fontaine, on intervient en appartement comme en maison : chauffe-eau en panne, WC qui fuient, recherche de fuite quand le compteur tourne.",
-             "Pour éviter les mauvaises surprises, on vous demande au téléphone de décrire le problème, et si possible une photo sur WhatsApp : le prix et l'heure d'arrivée vous sont annoncés avant de venir."],
+             "Pour éviter les mauvaises surprises, on vous demande au téléphone de décrire le problème, et si possible une photo sur WhatsApp : l'heure d'arrivée vous est annoncée avant de venir."],
       faq=[("Intervenez-vous dans toute l'agglomération grenobloise ?", "Oui : Grenoble, Échirolles, Saint-Martin-d'Hères, Fontaine, Seyssinet-Pariset, Saint-Égrève, Meylan, Eybens, Sassenage… L'heure d'arrivée vous est annoncée au téléphone."),
            ("Pouvez-vous fournir un rapport pour le syndic ou l'assurance ?", "Oui. En cas de dégât des eaux en copropriété, on vous remet un rapport d'intervention et une facture détaillée pour votre assurance et votre syndic.")]),
  dict(slug="plombier-annonay", ville="Annonay", cp="07100", dep="Ardèche",
@@ -86,7 +86,7 @@ VILLES = [
       local=["Entre les résidences et les maisons individuelles de Portes-lès-Valence, nos interventions les plus fréquentes sont les fuites sous évier, les WC qui fuient ou se bouchent et les chauffe-eau qui ne chauffent plus.",
              "Pour les fuites invisibles (compteur qui tourne, facture d'eau qui grimpe), on recherche l'origine sans tout casser et on vous remet un rapport pour l'assurance.",
              "Au sud de Valence, on intervient aussi à Étoile-sur-Rhône, Beauvallon et Montéléger : l'heure d'arrivée vous est annoncée au téléphone."],
-      faq=[("Venez-vous à Portes-lès-Valence le soir et le week-end ?", "Oui, nous intervenons 24h/24 et 7j/7. Le tarif applicable le soir et le week-end vous est annoncé au téléphone avant de venir."),
+      faq=[("Venez-vous à Portes-lès-Valence le soir et le week-end ?", "Oui, nous intervenons 24h/24 et 7j/7. Le tarif du soir et du week-end vous est indiqué avant l'intervention."),
            ("Intervenez-vous à Étoile-sur-Rhône et Beauvallon ?", "Oui, ainsi qu'à Montéléger, Beaumont-lès-Valence et Soyons.")]),
  dict(slug="plombier-saint-peray", ville="Saint-Péray", cp="07130", dep="Ardèche",
       voisines=["Guilherand-Granges", "Cornas", "Toulaud", "Saint-Romain-de-Lerps", "Alboussière", "Châteaubourg", "Valence"],
@@ -103,7 +103,7 @@ VILLES = [
              "Quand le compteur tourne sans raison, on cherche la fuite sans tout casser et on vous remet un rapport pour votre assurance habitation.",
              "On se déplace aussi pour les projets : remplacement de baignoire par une douche, rénovation de salle de bain, remplacement de chaudière gaz."],
       faq=[("Intervenez-vous à Bourg-de-Péage et Romans ?", "Oui, des deux côtés de l'Isère, ainsi qu'à Chatuzange-le-Goubet, Alixan et Saint-Paul-lès-Romans."),
-           ("Le prix est-il annoncé avant de venir ?", "Oui, le prix vous est annoncé au téléphone, puis confirmé par un devis écrit avant les travaux.")]),
+           ("Vos prix sont-ils clairs ?", "Oui : on travaille au prix juste, avec un devis écrit avant les travaux.")]),
  dict(slug="plombier-crest", ville="Crest", cp="26400", dep="Drôme",
       voisines=["Aouste-sur-Sye", "Eurre", "Allex", "Grane", "Chabrillan", "Divajeu", "Upie"],
       intro="Crest et la vallée de la Drôme font partie de notre secteur, au sud-est de Valence.",
@@ -154,7 +154,7 @@ VILLES = [
              "Dans les maisons plus anciennes du centre, les canalisations et évacuations demandent parfois un curage ou une inspection par caméra.",
              "On couvre aussi Moirans, Saint-Jean-de-Moirans, La Buisse et Rives : l'heure d'arrivée vous est annoncée au téléphone."],
       faq=[("Intervenez-vous à Voiron et Coublevie ?", "Oui, ainsi qu'à Moirans, Saint-Jean-de-Moirans, La Buisse, Saint-Étienne-de-Crossey et Rives."),
-           ("Le prix est-il annoncé avant de venir ?", "Oui, au téléphone, puis confirmé par un devis écrit avant les travaux.")]),
+           ("Vos prix sont-ils clairs ?", "Oui : on travaille au prix juste, avec un devis écrit avant les travaux.")]),
 ]
 
 
@@ -167,7 +167,7 @@ def page(v):
     V, CP = v["ville"], v["cp"]
     url = f"https://reseauartisansfrance.com/{v['slug']}/"
     title = f"Plombier à {V} ({CP}) : urgence 24h/24, fuite, WC bouché, chauffe-eau | Réseau Artisans France"
-    desc = f"Plombier à {V} et alentours : fuite d'eau, WC bouché, chauffe-eau en panne. Intervention 24h/24 et 7j/7, prix annoncé au téléphone avant de venir. Entreprise locale."
+    desc = f"Plombier à {V} et alentours : fuite d'eau, WC bouché, chauffe-eau en panne. Intervention 24h/24 et 7j/7, au prix juste. Entreprise locale."
     s = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", s, count=1, flags=re.S)
     s = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{desc}">', s, count=1)
     s = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', s, count=1)
