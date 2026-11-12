@@ -28,17 +28,31 @@
     body.set("page", form.dataset.page);
     ["nom","tel","ville","projet","delai","message"].forEach(function(k){ body.set(k, (fd.get(k)||"").toString().trim()); });
     body.set("source", source());
+    var eventId = "lead-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
     try{
       var q = new URLSearchParams(location.search);
       body.set("utm_source", q.get("utm_source") || (q.get("fbclid") ? "meta" : (q.get("gclid") ? "google" : "")));
       body.set("utm_campaign", q.get("utm_campaign") || "");
       body.set("utm_content", q.get("utm_content") || "");
+      /* Mesure Meta (API Conversions) : seulement si la case est cochée ou si les cookies ont été acceptés. */
+      var cookies = false; try{ cookies = localStorage.getItem("raf-consent") === "accept"; }catch(e){}
+      var accord = fd.get("mesure") === "oui" || cookies;
+      body.set("mesure", accord ? "oui" : "non");
+      if (accord) {
+        var ck = function(n){ var m = document.cookie.match("(?:^|; )" + n + "=([^;]*)"); return m ? m[1] : ""; };
+        var fbc = ck("_fbc") || (q.get("fbclid") ? "fb.1." + Date.now() + "." + q.get("fbclid") : "");
+        body.set("event_id", eventId);
+        body.set("fbc", fbc);
+        body.set("fbp", ck("_fbp"));
+        body.set("url", location.origin + location.pathname);
+        body.set("ua", navigator.userAgent);
+      }
     }catch(e){}
 
     btn.disabled = true; btn.textContent = "Envoi…";
     fetch(HOOK, {method:"POST", mode:"no-cors", body: body})
       .then(function(){
-        if (window.fbq) window.fbq("track","Lead",{content_name: form.dataset.page});
+        if (window.fbq) window.fbq("track","Lead",{content_name: form.dataset.page},{eventID: eventId});
         form.querySelector(".fields").style.display = "none";
         form.querySelector(".thanks").style.display = "block";
         form.scrollIntoView({behavior:"smooth", block:"center"});

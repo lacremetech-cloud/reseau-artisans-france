@@ -93,3 +93,4 @@ footer{background:#071629;color:#b7c4d6;font-size:14px;padding:34px 0 100px;line
 .t-ic{font-size:28px;line-height:1}
 .trust-item b{display:block;color:var(--navy);font-family:Montserrat,Inter,sans-serif;font-size:16px;margin-bottom:2px}
 .trust-item p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.optin{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4;margin:4px 0 10px;cursor:pointer}.optin input{margin-top:2px;width:16px;height:16px;flex:0 0 auto;accent-color:var(--blue)}.optin span{font-style:italic}
