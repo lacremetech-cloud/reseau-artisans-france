@@ -76,6 +76,7 @@ def page(p):
   <div>
     <span class="eyebrow">{p['eyebrow']}</span>
     <h1>{p['h1']}</h1>
+    {('<p class="tagline">' + p['tagline'] + '</p>') if p.get('tagline') else ''}
     <p class="lead">{p['lead']}</p>
     <ul class="ticks">{ticks}</ul>
     {slider(p['before'], p['after'], p['before_alt'], p['after_alt'], eager=True)}
@@ -184,6 +185,7 @@ SDB = dict(
  desc="Rénovation complète de salle de bain et WC, remplacement de baignoire par une douche. Un seul artisan du début à la fin. Visite et devis gratuits à domicile.",
  eyebrow="Valence · Drôme · Ardèche · Grenoble",
  h1="Il est temps de refaire <em>votre salle de bain.</em>",
+ tagline="Un seul artisan local, de A à Z.",
  lead="Baignoire remplacée par une douche, salle de bain complète, WC : <b>on s'occupe de tout</b>, plomberie, carrelage et finitions.",
  ticks=["Prix juste : devis gratuit, détaillé, sans surprise", "Intervention professionnelle, un seul artisan de A à Z", "Délais respectés : la date est fixée avec vous", "Entreprise locale, plus de 10 ans d\'expérience"],
  before="ba3-avant.jpg", before_alt="Salle de bain des années 80 avec baignoire carrelée et lavabo colonne", after="ba3-apres.jpg", after_alt="La même salle de bain refaite avec une douche à l'italienne et un meuble vasque",
@@ -192,11 +194,11 @@ SDB = dict(
  gallery=[("ba2-avant.jpg", "ba2-apres.jpg", "Salle de bain rose avec baignoire", "Douche plain-pied avec siège et barre d'appui"),
           ("ba4-avant.jpg", "ba4-apres.jpg", "Petite salle de bain avec baignoire et WC", "Douche vitrée, WC suspendu et meuble bois"),
           ("ba1-avant.jpg", "ba1-apres.jpg", "Salle de bain avec baignoire et rideau", "Douche à l'italienne et meuble chêne")],
- form_title="Votre devis gratuit", form_hint="2 minutes. Un artisan vous rappelle pour fixer la visite.",
+ form_title="Demandez votre devis gratuit", form_hint="2 minutes. Un artisan local vous rappelle pour fixer la visite gratuite.",
  projets=["Salle de bain complète", "Baignoire → douche", "Rénovation WC", "Autre projet"],
  delais=["Dès que possible", "Dans 1 à 3 mois", "Plus tard", "Je me renseigne"],
  placeholder="Ex. : salle de bain de 6 m², remplacer la baignoire par une douche à l'italienne…",
- cta="Recevoir mon devis gratuit", sticky="Mon devis gratuit",
+ cta="Demander mon devis gratuit", sticky="Mon devis gratuit",
  steps_sub="Simple et sans engagement : vous savez exactement ce qui sera fait et combien ça coûte avant de signer.",
  steps=[("Vous décrivez votre projet", "Par le formulaire ou par téléphone, en 2 minutes."), ("Visite gratuite chez vous", "On prend les mesures, on regarde l'existant et on discute de vos envies."), ("Devis écrit et détaillé", "Tout est chiffré poste par poste. Vous prenez le temps de décider."), ("Les travaux", "Un seul artisan coordonne tout, du démontage aux finitions.")],
  list_title="On s'occupe de tout", list_sub="Vous n'avez pas à courir après plusieurs entreprises.",

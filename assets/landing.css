@@ -139,3 +139,4 @@ body.brut{--navy:#111;--navy-2:#222;--ink:#111;--muted:#4b4b4b;--tint:#f2efe8;--
 .brut .stars{color:#111}
 .brut .stickycta{background:#faf8f3;border-top:3px solid #111}
 .brut footer{background:#111}
+.tagline{display:inline-block;margin:-4px 0 16px;background:var(--yel);color:#111;font:900 clamp(18px,2.4vw,24px) "Archivo Black",Inter,sans-serif;text-transform:uppercase;padding:6px 12px;border-radius:2px}
