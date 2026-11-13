@@ -52,6 +52,28 @@ PROBLEMES = [
       faq=[("Quelles chaudières dépannez-vous ?", "Les chaudières gaz murales et au sol des grandes marques. Appelez-nous avec la marque et le code erreur."),
            ("Ma chaudière perd sa pression, que faire ?", "Notez la pression affichée et le code erreur, puis appelez-nous : une pression qui baisse sans arrêt signale souvent une fuite ou un vase d'expansion à vérifier."),
            ("Faut-il remplacer une vieille chaudière ?", "Pas forcément. On répare quand ça vaut le coup, et on vous dit franchement quand le remplacement est plus raisonnable.")]),
+
+ dict(slug="chauffage-chaudiere-gaz", nom="Chauffage et chaudière gaz", h1="Chauffage, chaudière gaz ?", short="chauffage", projet=True, devis="../chaudiere/",
+      title="Chauffagiste : remplacement et entretien de chaudière gaz, radiateurs", lead="Chaudière gaz trop ancienne, radiateurs qui chauffent mal, entretien annuel : <b>un chauffagiste local vient voir, vous explique et vous fait un devis clair</b>, au prix juste.",
+      symptomes=["Une chaudière gaz de plus de 15 ans qui tombe souvent en panne", "Des radiateurs froids en haut ou qui chauffent mal", "L'entretien annuel obligatoire de la chaudière à faire", "Des radiateurs ou robinets thermostatiques à remplacer", "Une fuite sur le circuit de chauffage"],
+      etapes=["Visite gratuite : on regarde l'installation et vos besoins", "Devis écrit et détaillé, sans engagement", "Dépose de l'ancienne chaudière, pose de la nouvelle et mise en service", "Conseils d'utilisation et entretien annuel si vous le souhaitez"],
+      faq=[("Faut-il remplacer ma vieille chaudière ?", "Pas forcément : si elle est réparable à un coût raisonnable, on vous le dit. On vous conseille le remplacement seulement quand il est plus raisonnable."),
+           ("L'entretien de la chaudière gaz est-il obligatoire ?", "Oui, l'entretien annuel d'une chaudière gaz est obligatoire. Nous pouvons le réaliser et vous remettre l'attestation."),
+           ("Mes radiateurs chauffent mal, que faire ?", "Souvent, une purge suffit. Si le problème persiste, on vérifie le circuit, la pression et les robinets.")]),
+ dict(slug="renovation-salle-de-bain", nom="Rénovation de salle de bain", h1="Refaire votre salle de bain ?", short="salle de bain", projet=True, devis="../salle-de-bain/",
+      title="Rénovation de salle de bain : douche à l'italienne, remplacement de baignoire", lead="Baignoire à remplacer par une douche, salle de bain vieillissante, douche à l'italienne : <b>un seul artisan local s'occupe de tout, de A à Z</b>, au prix juste.",
+      symptomes=["Une baignoire difficile à enjamber, à remplacer par une douche", "Une salle de bain vieillissante : carrelage, meuble, robinetterie", "Une envie de douche à l'italienne", "Des joints noircis, une humidité qui revient", "Un lavabo ou un meuble vasque à changer"],
+      etapes=["Visite gratuite à domicile pour voir la pièce et vos envies", "Devis écrit et détaillé, avec les délais", "Dépose, plomberie, carrelage, pose des équipements et finitions", "Chantier propre, délais respectés, un seul interlocuteur"],
+      faq=[("Combien de temps durent les travaux ?", "Ça dépend du projet : un remplacement de baignoire par une douche est rapide, une rénovation complète prend plus de temps. Le délai est indiqué sur le devis."),
+           ("Faut-il plusieurs artisans ?", "Non : on s'occupe de tout, de la dépose aux finitions, avec un seul interlocuteur."),
+           ("La visite est-elle payante ?", "Non, la visite et le devis sont gratuits et sans engagement.")]),
+ dict(slug="travaux-plomberie", nom="Travaux de plomberie", h1="Des travaux de plomberie ?", short="travaux", projet=True, devis="",
+      title="Travaux de plomberie : installation, remplacement de tuyauterie, sanitaires", lead="Remplacer une tuyauterie, installer un WC, un évier, un lave-linge, déplacer une arrivée d'eau : <b>un plombier expérimenté réalise vos travaux</b>, au prix juste.",
+      symptomes=["Une tuyauterie ancienne à remplacer (plomb, acier, fuites à répétition)", "Un WC, un lavabo ou un évier à installer ou à changer", "Un raccordement de lave-linge ou de lave-vaisselle", "Une arrivée d'eau ou une évacuation à déplacer", "Une robinetterie ou un mitigeur à remplacer"],
+      etapes=["Vous nous décrivez le projet au téléphone, avec photos si possible", "Visite et devis gratuits si nécessaire", "Travaux réalisés proprement, dans les délais annoncés", "Facture détaillée et conseils d'entretien"],
+      faq=[("Faites-vous les petits travaux ?", "Oui : remplacement de mitigeur, de WC, raccordement d'électroménager… aucun chantier n'est trop petit."),
+           ("Faut-il changer une tuyauterie en plomb ?", "Oui, c'est recommandé pour la qualité de l'eau. On vous fait un devis pour la remplacer."),
+           ("Intervenez-vous pour les propriétaires bailleurs ?", "Oui, pour les particuliers, les bailleurs et les professionnels, avec facture détaillée.")]),
 ]
 
 LIEUX = [None,
@@ -79,8 +101,10 @@ def page(p, lieu):
     s = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", s, count=1, flags=re.S)
     s = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{desc}">', s, count=1)
     s = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', s, count=1)
+    if p.get("projet"):
+        s = re.sub(r'<!-- EN ATTENDANT -->\s*<section id="reflexes">.*?</section>', '', s, count=1, flags=re.S)
     s = s.replace("Urgence plomberie · Drôme-Ardèche", f"{p['nom']} · {V + ' ' + lieu['cp'] if V else 'Drôme · Ardèche · Isère'}", 1)
-    s = re.sub(r'<h1 class="h1-near">.*?</h1>', f'<h1 class="h1-near"><span>{p["h1"]}</span><span class="near">Un plombier{(" à&nbsp;" + V) if V else ""} vient chez&nbsp;vous</span></h1>', s, count=1, flags=re.S)
+    s = re.sub(r'<h1 class="h1-near">.*?</h1>', f'<h1 class="h1-near"><span>{p["h1"]}</span><span class="near">{("Visite et devis gratuits" + (" à&nbsp;" + V if V else "")) if p.get("projet") else ("Un plombier" + (" à&nbsp;" + V if V else "") + " vient chez&nbsp;vous")}</span></h1>', s, count=1, flags=re.S)
     s = re.sub(r'<p class="lead">.*?</p>', f'<p class="lead">{p["lead"]}</p>', s, count=1, flags=re.S)
     if V:
         s = s.replace("<span data-ville>Valence</span>", f"<span data-ville>{V}</span>")
@@ -96,6 +120,7 @@ def page(p, lieu):
         <div class="card"><h3>Comment on intervient</h3><ol>{"".join(f"<li>{x}</li>" for x in p["etapes"])}</ol></div>
       </div>
       <p class="sub">On travaille au prix juste : devis écrit avant les travaux, paiement après intervention.</p>
+      {('<p><a class="btn btn-call" href="' + p["devis"] + '">Demander mon devis gratuit</a></p>') if p.get("devis") else ""}
       <p>Voir aussi : {others}. {villes}.</p>
     </div>
   </section>
@@ -116,9 +141,10 @@ def update_home(villes):
     p = os.path.join(HERE, "index.html")
     s = open(p, encoding="utf-8").read()
     links_v = " · ".join(f'<a href="/{v["slug"]}/">{v["ville"]}</a>' for v in villes)
-    links_p = " · ".join(f'<a href="/{q["slug"]}/">{q["nom"]}</a>' for q in PROBLEMES)
-    s = re.sub(r'<p class="legal">Nos pages par ville :.*?</p>(\n\s*<p class="legal">Urgences :.*?</p>)?',
-               f'<p class="legal">Nos pages par ville : {links_v}</p>\n      <p class="legal">Urgences : {links_p}</p>', s, count=1, flags=re.S)
+    links_p = " · ".join(f'<a href="/{q["slug"]}/">{q["nom"]}</a>' for q in PROBLEMES if not q.get("projet"))
+    links_j = " · ".join(f'<a href="/{q["slug"]}/">{q["nom"]}</a>' for q in PROBLEMES if q.get("projet"))
+    s = re.sub(r'<p class="legal">Nos pages par ville :.*?</p>(\n\s*<p class="legal">Urgences :.*?</p>)?(\n\s*<p class="legal">Projets :.*?</p>)?',
+               f'<p class="legal">Nos pages par ville : {links_v}</p>\n      <p class="legal">Urgences : {links_p}</p>\n      <p class="legal">Projets : {links_j}</p>', s, count=1, flags=re.S)
     ld = {"@context": "https://schema.org", "@type": "Plumber", "name": "Réseau Artisans France", "url": SITE + "/", "telephone": TEL,
           "image": SITE + "/assets/raf-logo.png",
           "address": {"@type": "PostalAddress", "streetAddress": "60 rue des Bouvreuils", "postalCode": "07100", "addressLocality": "Annonay", "addressCountry": "FR"},
