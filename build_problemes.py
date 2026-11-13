@@ -13,14 +13,14 @@ COMMUNES = {
            "Montélier", "Chabeuil", "Étoile-sur-Rhône", "Beauvallon", "Montéléger", "Alixan", "Châteauneuf-sur-Isère", "Pont-de-l'Isère",
            "Romans-sur-Isère", "Bourg-de-Péage", "Mours-Saint-Eusèbe", "Génissieux", "Peyrins", "Saint-Paul-lès-Romans", "Chatuzange-le-Goubet",
            "Tain-l'Hermitage", "Mercurol-Veaunes", "Chanos-Curson", "Érôme", "Crozes-Hermitage", "Beaumont-Monteux", "Saint-Vallier",
-           "Crest", "Aouste-sur-Sye", "Eurre", "Allex", "Grane", "Upie"],
+           "Crest", "Aouste-sur-Sye", "Eurre", "Allex", "Grane", "Upie", "Montélimar", "Livron-sur-Drôme", "Loriol-sur-Drôme", "Saint-Rambert-d'Albon", "Montmeyran", "Anneyron"],
  "Ardèche": ["Annonay", "Davézieux", "Boulieu-lès-Annonay", "Roiffieux", "Saint-Marcel-lès-Annonay", "Vernosc-lès-Annonay", "Quintenas",
              "Talencieux", "Saint-Désirat", "Peaugres", "Serrières", "Andance", "Sarras",
              "Guilherand-Granges", "Saint-Péray", "Cornas", "Soyons", "Toulaud", "Châteaubourg", "Alboussière", "Charmes-sur-Rhône",
-             "Tournon-sur-Rhône", "Mauves", "Saint-Jean-de-Muzols", "Lemps", "Glun"],
+             "Tournon-sur-Rhône", "Mauves", "Saint-Jean-de-Muzols", "Lemps", "Glun", "Privas", "La Voulte-sur-Rhône", "Le Pouzin", "Le Teil"],
  "Isère": ["Grenoble", "Échirolles", "Saint-Martin-d'Hères", "Fontaine", "Seyssinet-Pariset", "Seyssins", "Sassenage", "Saint-Égrève",
            "Meylan", "La Tronche", "Eybens", "Le Pont-de-Claix", "Gières", "Poisat", "Claix", "Montbonnot-Saint-Martin", "Saint-Ismier",
-           "Voiron", "Coublevie", "Moirans", "Saint-Jean-de-Moirans", "Rives", "Chanas", "Roussillon", "Le Péage-de-Roussillon"],
+           "Voiron", "Coublevie", "Moirans", "Saint-Jean-de-Moirans", "Rives", "Voreppe", "Chanas", "Roussillon", "Le Péage-de-Roussillon", "Salaise-sur-Sanne", "Saint-Maurice-l'Exil"],
 }
 
 PROBLEMES = [
