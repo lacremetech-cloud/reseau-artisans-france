@@ -202,7 +202,8 @@ export default async function handler(req, res) {
         const statutChange = next.statut !== c.statut;
         // chaque « Pas répondu » compte une tentative d'appel de plus
         const nbRelances = (c.nb_relances || 0) + (p.statut === 'relancer' ? 1 : 0);
-        const termineAt = next.statut === 'termine' ? (c.termine_at || new Date()) : null;
+        // date de facturation : celle saisie, sinon celle déjà connue, sinon maintenant
+        const termineAt = next.statut === 'termine' ? (p.termine_at ? new Date(p.termine_at) : c.termine_at || new Date()) : null;
         const avisAt = next.avis_demande ? (c.avis_at || new Date()) : null;
         await sql`update leads set statut = ${next.statut}, statut_at = ${statutChange ? new Date() : c.statut_at}, source = ${next.source},
             rdv_at = ${next.rdv_at}, relance_at = ${next.relance_at}, nb_relances = ${nbRelances}, montant = ${next.montant}, frais_gasoil = ${next.frais_gasoil}, frais_materiel = ${next.frais_materiel},

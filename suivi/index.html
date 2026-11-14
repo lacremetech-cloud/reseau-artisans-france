@@ -184,9 +184,9 @@ const API = '/api/suivi';
 const REVIEW = 'https://g.page/r/Cd-3QXPqZL6kEBM/review';
 const SRC = {lsa:'Google (LSA)',google_ads:'Google Ads',meta:'Facebook / Insta',site:'Site web',fiche_google:'Fiche Google',bouche_a_oreille:'Bouche-à-oreille',autre:'Autre',inconnu:'À préciser'};
 const SRC_PICK = ['lsa','google_ads','meta','fiche_google','site','bouche_a_oreille','autre'];
-const ST = {nouveau:'Nouveau',relancer:'À relancer',rappele:'Rappelé',devis:'Devis envoyé',planifie:'Intervention planifiée',termine:'Terminé',perdu:'Perdu',faux:'Faux lead'};
+const ST = {nouveau:'Nouveau',relancer:'À relancer',rappele:'Rappelé',devis:'Devis envoyé',planifie:'Intervention planifiée',termine:'Facturé',perdu:'Perdu',faux:'Faux lead'};
 const ST_PICK = ['relancer','rappele','devis','planifie','termine','perdu','faux'];
-const ST_BTN = {relancer:'📵 Pas répondu → à relancer',rappele:'✅ Eu au téléphone'};
+const ST_BTN = {termine:'💶 Facturé',relancer:'📵 Pas répondu → à relancer',rappele:'✅ Eu au téléphone'};
 const PLAT = {meta:'Meta (Facebook / Insta)',google_ads:'Google Ads',lsa:'Google LSA'};
 const RATE = 0.25;
 let S = {token:null,name:'',role:'',leads:[],filter:'todo',q:'',period:'month',cur:null,dirty:false};
@@ -231,7 +231,7 @@ function logout(){store('raf_s');S.token=null;$('#app').classList.add('hide');$(
 
 /* ---------- liste ---------- */
 const FILTERS=[['todo','À traiter',l=>['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],['relancer','À relancer',l=>l.statut==='relancer'],
-  ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Terminés',l=>l.statut==='termine'],['all','Tous',()=>true]];
+  ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Facturés',l=>l.statut==='termine'],['all','Tous',()=>true]];
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[\s.\-]/g,'');
 function drawFilters(){$('#filters').innerHTML=FILTERS.map(([k,l,f])=>`<button class="chip ${S.filter===k?'on':''}" data-f="${k}">${l}<b>${S.leads.filter(f).length}</b></button>`).join('')}
 function drawList(){
@@ -252,7 +252,7 @@ function drawList(){
      <div class="resume">${esc(resume(l))}</div>
      ${l.statut==='relancer'?`<div class="sub" style="color:#c2410c;font-weight:700;margin-top:4px">📵 Pas répondu${l.nb_relances?' · '+l.nb_relances+' tentative'+(l.nb_relances>1?'s':''):''}${l.relance_at?' · rappeler '+dt(l.relance_at):''}</div>`:''}
      ${l.statut==='planifie'&&l.rdv_at?`<div class="sub" style="color:#5b3fd1;font-weight:700;margin-top:4px">📅 ${dt(l.rdv_at)}</div>`:''}
-     ${l.statut==='termine'?`<div class="sub" style="margin-top:4px">${l.montant!=null?'💶 '+eur(l.montant):'⚠️ Montant à remplir'}${l.photos?' · 📷 '+l.photos:''} · ${l.avis_demande?'⭐ avis demandé':'avis pas demandé'}</div>`:''}
+     ${l.statut==='termine'?`<div class="sub" style="margin-top:4px">${l.montant!=null?'💶 '+eur(l.montant):'⚠️ Montant facturé à remplir'}${l.photos?' · 📷 '+l.photos:''} · ${l.avis_demande?'⭐ avis demandé':'avis pas demandé'}</div>`:''}
      ${l.telephone&&['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)?`<div class="qa"><a class="call" href="tel:${l.telephone}">📞 Appeler</a><a class="wa" href="https://wa.me/${waTel(l.telephone)}" target="_blank" rel="noopener">WhatsApp</a>${['nouveau','relancer'].includes(l.statut)?`<button class="nr" data-nr="${l.id}" title="Pas répondu : à relancer">📵</button>`:''}</div>`:''}
    </div>`).join(''):`<div class="empty">Aucun client ici pour l'instant.</div>`;
 }
@@ -276,6 +276,12 @@ async function openLead(id){
   const sh=$('#sheet');sh.classList.remove('hide');sh.innerHTML='<div class="top"><button data-close>←</button><div class="t">Chargement…</div></div>';
   const j=await call('lead',{id});S.cur={...j.lead,_photos:j.photos,_events:j.events};S.dirty=false;drawLead();history.pushState({s:1},'');
 }
+function calcHtml(l){
+  const n=v=>+String(v??'').replace(',','.')||0;
+  const m=n(l.montant),fr=n(l.frais_gasoil)+n(l.frais_materiel)+n(l.frais_autres),base=m-fr;
+  return `<div><span>Montant facturé</span><b>${eur(m)}</b></div><div><span>− Frais engagés</span><b>${eur(fr)}</b></div>
+   <div style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span><b>Reste après frais</b></span><b>${eur(base)}</b></div>
+   <div><span>dont commission agence 25 %</span><b>${eur(base*RATE)}</b></div>`}
 function drawLead(){
   const l=S.cur,sh=$('#sheet');
   const frais=(+l.frais_gasoil||0)+(+l.frais_materiel||0)+(+l.frais_autres||0);
@@ -316,23 +322,21 @@ function drawLead(){
       <input class="inp" type="datetime-local" data-k="rdv_at" value="${localInput(l.rdv_at)}">
     </div>
 
-    <div class="${l.statut==='termine'?'':'hide'}">
-      <h3>Intervention terminée</h3>
-      <label class="f">Montant facturé au client (€)</label>
-      <input class="inp" inputmode="decimal" data-k="montant" value="${l.montant??''}" placeholder="ex : 350">
+    <div class="${l.statut==='termine'?'':'hide'} facture">
+      <h3>💶 Facturation</h3>
+      <div class="money">
+        <div><label class="f">Montant facturé (€)</label><input class="inp" inputmode="decimal" data-k="montant" value="${l.montant??''}" placeholder="ex : 350"></div>
+        <div><label class="f">Date de facturation</label><input class="inp" type="date" data-k="termine_at" value="${ymd(l.termine_at||new Date())}"></div>
+      </div>
+      <label class="f" style="margin-top:14px;color:var(--ink);font-size:14px">Frais engagés</label>
       <div class="money">
         <div><label class="f">Gasoil / péage (€)</label><input class="inp" inputmode="decimal" data-k="frais_gasoil" value="${+l.frais_gasoil||''}" placeholder="0"></div>
-        <div><label class="f">Matériel (€)</label><input class="inp" inputmode="decimal" data-k="frais_materiel" value="${+l.frais_materiel||''}" placeholder="0"></div>
+        <div><label class="f">Matériel / fournitures (€)</label><input class="inp" inputmode="decimal" data-k="frais_materiel" value="${+l.frais_materiel||''}" placeholder="0"></div>
       </div>
-      <label class="f">Autres frais (€) — ex : camion hydrocureur</label>
+      <label class="f">Autres frais (€) — ex : camion hydrocureur, sous-traitance</label>
       <input class="inp" inputmode="decimal" data-k="frais_autres" value="${+l.frais_autres||''}" placeholder="0">
       <input class="inp" style="margin-top:6px" data-k="frais_detail" value="${esc(l.frais_detail||'')}" placeholder="Détail des frais (facultatif)">
-      <div class="calc">
-        <div><span>Chiffre d'affaires</span><b>${eur(+l.montant||0)}</b></div>
-        <div><span>− Frais</span><b>${eur(frais)}</b></div>
-        <div><span>Base de calcul</span><b>${eur(base)}</b></div>
-        <div><span>Commission 25 %</span><b>${eur(base*RATE)}</b></div>
-      </div>
+      <div class="calc" id="calc">${calcHtml(l)}</div>
     </div>
 
     <h3>Avis Google demandé ?</h3>
@@ -362,7 +366,7 @@ async function patch(p,msg){
   try{await call('update',{id:l.id,patch:p});if(msg)toast(msg);const j=await call('lead',{id:l.id});S.cur={...j.lead,_photos:j.photos,_events:j.events};drawLead();refresh()}
   catch(e){toast(e.message)}
 }
-function collect(){const p={};$('#sheet').querySelectorAll('[data-k]').forEach(i=>{p[i.dataset.k]=i.dataset.k==='rdv_at'?(i.value?new Date(i.value).toISOString():null):i.value});return p}
+function collect(){const p={};$('#sheet').querySelectorAll('[data-k]').forEach(i=>{p[i.dataset.k]=i.dataset.k==='rdv_at'?(i.value?new Date(i.value).toISOString():null):i.dataset.k==='termine_at'?(i.value?new Date(i.value+'T12:00').toISOString():null):i.value});return p}
 
 /* photo : compressée dans le téléphone avant envoi */
 function compress(file){return new Promise((ok,ko)=>{const img=new Image();img.onload=()=>{const m=1600,r=Math.min(1,m/Math.max(img.width,img.height));
@@ -386,7 +390,7 @@ $('#sheet').addEventListener('click',async e=>{
   if(t.dataset.photo!==undefined){$('#file').click();return}
   if(t.dataset.save!==undefined){t.classList.add('spin');S.dirty=false;await patch(collect(),'Enregistré ✔');return}
 });
-$('#sheet').addEventListener('input',e=>{if(e.target.dataset.k&&!S.dirty){S.dirty=true;$('#sheet .save').classList.remove('hide')}});
+$('#sheet').addEventListener('input',e=>{if(['montant','frais_gasoil','frais_materiel','frais_autres'].includes(e.target.dataset.k)&&$('#calc'))$('#calc').innerHTML=calcHtml(collect());if(e.target.dataset.k&&!S.dirty){S.dirty=true;$('#sheet .save').classList.remove('hide')}});
 /* rattacher la fiche ouverte à une autre fiche (fusion) */
 function openPicker(){
   const cur=S.cur;if(!cur)return;
@@ -456,7 +460,7 @@ async function drawDash(){
   $('#dash').innerHTML=`
    <div class="kpis">
      <div class="kpi"><div class="l">Clients entrants</div><div class="v">${nLeads}</div><div class="s">${nFaux?nFaux+' faux leads en plus':'&nbsp;'}</div></div>
-     <div class="kpi"><div class="l">Interventions terminées</div><div class="v">${done.length}</div><div class="s">${nLeads?Math.round(done.length/nLeads*100)+' % des clients':'&nbsp;'}</div></div>
+     <div class="kpi"><div class="l">Interventions facturées</div><div class="v">${done.length}</div><div class="s">${nLeads?Math.round(done.length/nLeads*100)+' % des clients':'&nbsp;'}</div></div>
      <div class="kpi"><div class="l">Chiffre d'affaires</div><div class="v">${eur0(CA)}</div><div class="s">${done.length?'panier moyen '+eur0(CA/done.length):'&nbsp;'}</div></div>
      <div class="kpi"><div class="l">Frais connus</div><div class="v">${eur0(FR)}</div><div class="s">gasoil, matériel, autres</div></div>
      <div class="kpi"><div class="l">Base de calcul</div><div class="v">${eur0(BASE)}</div><div class="s">CA − frais</div></div>
@@ -465,14 +469,14 @@ async function drawDash(){
      <div class="kpi"><div class="l">Avis demandés</div><div class="v">${avis}/${done.length}</div><div class="s">sur les interventions</div></div>
      <div class="kpi hl" style="grid-column:1/-1"><div class="l">Reste pour RAF</div><div class="v">${eur(RESTE)}</div><div class="s">CA − frais − commission − publicité · ${CA?(PUB?'1 € de pub = '+(CA/PUB).toFixed(1).replace('.',',')+' € de CA':''):''}</div></div>
    </div>
-   ${manquants?`<div class="card" style="background:var(--warn-bg);color:var(--warn);font-weight:600;margin-top:10px">⚠️ ${manquants} intervention(s) terminée(s) sans montant : les chiffres sont incomplets.</div>`:''}
+   ${manquants?`<div class="card" style="background:var(--warn-bg);color:var(--warn);font-weight:600;margin-top:10px">⚠️ ${manquants} intervention(s) facturée(s) sans montant : les chiffres sont incomplets.</div>`:''}
 
    <h3>Par source</h3>
    <div class="card scroll"><table class="tbl"><thead><tr><th>Source</th><th class="n">Clients</th><th class="n">Interv.</th><th class="n">CA</th><th class="n">Pub</th><th class="n">Coût / client</th></tr></thead><tbody>
    ${srcRows.map(([k,s])=>{const pub=pubBy[k]||0;return`<tr><td><span class="src ${k}">${SRC[k]||k}</span></td><td class="n">${s.leads}</td><td class="n">${s.done}</td><td class="n">${eur0(s.ca)}</td><td class="n">${pub?eur0(pub):'—'}</td><td class="n">${pub&&s.leads?eur0(pub/s.leads):'—'}</td></tr>`}).join('')||'<tr><td colspan="6">—</td></tr>'}
    </tbody></table><div class="note">Coût / client = pub de la plateforme ÷ clients entrants de cette source. « À préciser » : source pas encore renseignée.</div></div>
 
-   <h3>Interventions</h3>
+   <h3>Interventions facturées</h3>
    <div class="card scroll"><table class="tbl"><thead><tr><th>Date</th><th>Client</th><th class="n">CA</th><th class="n">Frais</th><th class="n">Base</th><th class="n">Comm.</th></tr></thead><tbody>
    ${done.map(x=>`<tr data-id="${x.id}" style="cursor:pointer"><td>${new Date(x.termine_at||x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</td><td>${esc(x.ville||x.nom||'—')}<br><span class="src ${x.source}" style="font-size:11px">${SRC[x.source]}</span></td><td class="n">${x.montant?eur0(x.montant):'⚠️'}</td><td class="n">${eur0(x.frais)}</td><td class="n">${eur0(x.montant-x.frais)}</td><td class="n">${eur(Math.max(0,(x.montant-x.frais))*RATE)}</td></tr>`).join('')}
    <tr class="tot"><td colspan="2">Total</td><td class="n">${eur0(CA)}</td><td class="n">${eur0(FR)}</td><td class="n">${eur0(BASE)}</td><td class="n">${eur(COM)}</td></tr>
