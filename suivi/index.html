@@ -404,7 +404,7 @@ async function drawDash(){
    <div class="card scroll"><table class="tbl"><thead><tr><th>Jour</th><th class="n">Meta</th><th class="n">G. Ads</th><th class="n">LSA</th><th class="n">Total</th></tr></thead><tbody>
    ${(()=>{const by={};j.spend.forEach(s=>{const k=String(s.day).slice(0,10);(by[k]=by[k]||{meta:0,google_ads:0,lsa:0,est:false})[s.platform]+=s.amount;if(s.est)by[k].est=true});
      const ks=Object.keys(by).sort().reverse();return ks.map(k=>{const r=by[k];return`<tr><td>${new Date(k+'T12:00').toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'})}</td><td class="n">${eur0(r.meta)}</td><td class="n">${eur0(r.google_ads)}</td><td class="n">${eur0(r.lsa)}${r.est?'*':''}</td><td class="n"><b>${eur0(r.meta+r.google_ads+r.lsa)}</b></td></tr>`}).join('')||'<tr><td colspan="5">Pas encore de dépense enregistrée</td></tr>'})()}
-   </tbody></table><div class="note">* LSA estimé (Google ne donne le coût LSA que par mois). Mise à jour automatique chaque jour.</div></div>
+   </tbody></table><div class="note">Relevé automatique toutes les 3 heures (Meta, Google Ads, LSA). Les chiffres du jour peuvent encore bouger. * montant estimé.</div></div>
 
    ${S.role==='admin'?`<h3>Saisir une dépense pub (admin)</h3>
    <div class="card"><form id="spf"><div class="money"><div><label class="f">Jour</label><input class="inp" type="date" name="day" value="${ymd(new Date())}" required></div>
