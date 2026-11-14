@@ -61,6 +61,7 @@ main{max-width:720px;margin:0 auto;padding:12px 16px calc(96px + env(safe-area-i
 .when{font-size:13px;color:var(--muted);margin-left:auto}
 .lead .nm{font-size:17px;font-weight:700;margin:6px 0 2px}
 .lead .sub{color:var(--muted);font-size:14px}
+.lead .resume{margin-top:6px;font-size:14px;line-height:1.35;color:var(--ink);background:#f6f8fc;border-radius:8px;padding:7px 9px}
 .pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:#eef0f3}
 .pill.nouveau{background:#fde2e4;color:var(--red)}.pill.rappele{background:#e8eef9;color:var(--blue)}.pill.devis{background:var(--warn-bg);color:var(--warn)}
 .pill.planifie{background:#e9e5fb;color:#5b3fd1}.pill.termine{background:var(--ok-bg);color:var(--ok)}.pill.perdu,.pill.faux{background:#eef0f3;color:#6b7280}
@@ -213,17 +214,31 @@ function drawFilters(){$('#filters').innerHTML=FILTERS.map(([k,l,f])=>`<button c
 function drawList(){
   drawFilters();
   const f=FILTERS.find(x=>x[0]===S.filter)[2];const q=S.q.toLowerCase().replace(/\s/g,'');
-  let rows=S.leads.filter(f).filter(l=>!q||[l.nom,l.telephone,l.ville,l.besoin,SRC[l.source]].join(' ').toLowerCase().replace(/\s/g,'').includes(q));
+  let rows=S.leads.filter(f).filter(l=>!q||[l.nom,l.telephone,l.ville,l.besoin,SRC[l.source],l.note,l.message].join(' ').toLowerCase().replace(/\s/g,'').includes(q));
   if(S.filter==='planifie')rows.sort((a,b)=>new Date(a.rdv_at||0)-new Date(b.rdv_at||0));
   $('#list').innerHTML=rows.length?rows.map(l=>`
    <div class="card lead ${l.statut==='nouveau'?'new':''}" data-id="${l.id}">
      <div class="row"><span class="src ${l.source}">${SRC[l.source]||l.source}</span><span class="pill ${l.statut}">${ST[l.statut]}</span><span class="when">${ago(l.created_at)}</span></div>
      <div class="nm">${esc(l.nom||fmtTel(l.telephone)||'Sans numéro')}</div>
-     <div class="sub">${esc([l.nom&&fmtTel(l.telephone),l.ville,l.besoin].filter(Boolean).join(' · ')||'—')}</div>
+     <div class="sub">${esc([l.nom&&fmtTel(l.telephone),l.ville].filter(Boolean).join(' · '))}</div>
+     <div class="resume">${esc(resume(l))}</div>
      ${l.statut==='planifie'&&l.rdv_at?`<div class="sub" style="color:#5b3fd1;font-weight:700;margin-top:4px">📅 ${dt(l.rdv_at)}</div>`:''}
      ${l.statut==='termine'?`<div class="sub" style="margin-top:4px">${l.montant!=null?'💶 '+eur(l.montant):'⚠️ Montant à remplir'}${l.photos?' · 📷 '+l.photos:''} · ${l.avis_demande?'⭐ avis demandé':'avis pas demandé'}</div>`:''}
      ${l.telephone&&['nouveau','rappele','devis','planifie'].includes(l.statut)?`<div class="qa"><a class="call" href="tel:${l.telephone}">📞 Appeler</a><a class="wa" href="https://wa.me/${waTel(l.telephone)}" target="_blank" rel="noopener">WhatsApp</a></div>`:''}
    </div>`).join(''):`<div class="empty">Aucun client ici pour l'instant.</div>`;
+}
+/* petite phrase qui dit qui est le client */
+function resume(l){
+  const t=String(l.lead_type||'').toLowerCase();
+  const canal=t.includes('formulaire')?'Demande de devis':t.includes('message')?'Message':t.includes('phone')||t.includes('appel')?'Appel':'Client';
+  const via={lsa:'via Google (LSA)',google_ads:'via une annonce Google',meta:'via Facebook / Insta',site:'via le site',fiche_google:'via la fiche Google',bouche_a_oreille:'par bouche-à-oreille',autre:'',inconnu:''}[l.source]||'';
+  const head=[canal,via,l.ville?'à '+l.ville:''].filter(Boolean).join(' ');
+  const quoi=l.besoin||'';
+  const plus=(l.note||'').split(/\n|\. /)[0]||(l.message||'');
+  let s=head+(quoi?' : '+quoi:'');
+  if(plus&&!s.includes(plus))s+=(quoi?'. ':' — ')+plus;
+  s=s.replace(/\s+/g,' ').trim();
+  return s.length>140?s.slice(0,137)+'…':s;
 }
 async function refresh(){try{const j=await call('leads');S.leads=j.leads;if(!$('#tab-leads').classList.contains('hide'))drawList()}catch(e){}}
 
@@ -297,7 +312,7 @@ function drawLead(){
       <div><label class="f">Ville</label><input class="inp" data-k="ville" value="${esc(l.ville||'')}"></div>
     </div>
     <label class="f">Besoin</label><input class="inp" data-k="besoin" value="${esc(l.besoin||'')}" placeholder="ex : fuite sous évier">
-    <label class="f">Note</label><textarea class="inp" data-k="note" placeholder="Infos utiles, ce qui a été dit…">${esc(l.note||'')}</textarea>
+    <label class="f">Note (la 1re phrase s'affiche sur la carte du client)</label><textarea class="inp" data-k="note" placeholder="ex : Mme Martin, fuite sous l'évier, rappeler après 18h">${esc(l.note||'')}</textarea>
 
     <h3>Historique</h3>
     <div class="hist">${l._events.map(e=>`<div>${dt(e.at)} · <b>${esc(e.by_user||'')}</b> · ${esc(e.detail||e.action)}</div>`).join('')||'<div>—</div>'}</div>

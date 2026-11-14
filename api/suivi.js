@@ -162,7 +162,7 @@ export default async function handler(req, res) {
     switch (action) {
       case 'leads': {
         const rows = await sql`select l.id, l.created_at, l.source, l.campagne, l.lead_type, l.ville, l.nom, l.telephone, l.besoin, l.statut, l.statut_at,
-            l.rdv_at, l.montant, l.avis_demande, l.updated_by,
+            l.rdv_at, l.montant, l.avis_demande, l.updated_by, left(l.note, 200) note, left(l.message, 200) message,
             (select count(*)::int from lead_photos p where p.lead_id = l.id) photos
           from leads l order by l.created_at desc limit 400`;
         return send(res, 200, { leads: rows });
