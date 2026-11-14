@@ -9,7 +9,7 @@ const SECRET = process.env.SUIVI_SECRET || '';
 const INGEST_KEY = process.env.INGEST_KEY || '';
 const COMMISSION = 0.25;
 
-const STATUTS = ['nouveau', 'rappele', 'devis', 'planifie', 'termine', 'perdu', 'faux'];
+const STATUTS = ['nouveau', 'relancer', 'rappele', 'devis', 'planifie', 'termine', 'perdu', 'faux'];
 const SOURCES = ['lsa', 'google_ads', 'meta', 'site', 'fiche_google', 'bouche_a_oreille', 'autre', 'inconnu'];
 const PLATFORMS = ['meta', 'google_ads', 'lsa'];
 
@@ -162,7 +162,7 @@ export default async function handler(req, res) {
     switch (action) {
       case 'leads': {
         const rows = await sql`select l.id, l.created_at, l.source, l.campagne, l.lead_type, l.ville, l.nom, l.telephone, l.besoin, l.statut, l.statut_at,
-            l.rdv_at, l.montant, l.avis_demande, l.updated_by, left(l.note, 200) note, left(l.message, 200) message,
+            l.rdv_at, l.relance_at, l.nb_relances, l.montant, l.avis_demande, l.updated_by, left(l.note, 200) note, left(l.message, 200) message,
             (select count(*)::int from lead_photos p where p.lead_id = l.id) photos
           from leads l order by l.created_at desc limit 400`;
         return send(res, 200, { leads: rows });
@@ -186,6 +186,7 @@ export default async function handler(req, res) {
           statut: STATUTS.includes(p.statut) ? p.statut : c.statut,
           source: SOURCES.includes(p.source) ? p.source : c.source,
           rdv_at: 'rdv_at' in p ? (p.rdv_at ? new Date(p.rdv_at) : null) : c.rdv_at,
+          relance_at: 'relance_at' in p ? (p.relance_at ? new Date(p.relance_at) : null) : c.relance_at,
           montant: 'montant' in p ? num(p.montant) : c.montant,
           frais_gasoil: 'frais_gasoil' in p ? num(p.frais_gasoil) || 0 : c.frais_gasoil,
           frais_materiel: 'frais_materiel' in p ? num(p.frais_materiel) || 0 : c.frais_materiel,
@@ -199,15 +200,18 @@ export default async function handler(req, res) {
           telephone: 'telephone' in p ? normPhone(p.telephone) : c.telephone,
         };
         const statutChange = next.statut !== c.statut;
+        // chaque « Pas répondu » compte une tentative d'appel de plus
+        const nbRelances = (c.nb_relances || 0) + (p.statut === 'relancer' ? 1 : 0);
         const termineAt = next.statut === 'termine' ? (c.termine_at || new Date()) : null;
         const avisAt = next.avis_demande ? (c.avis_at || new Date()) : null;
         await sql`update leads set statut = ${next.statut}, statut_at = ${statutChange ? new Date() : c.statut_at}, source = ${next.source},
-            rdv_at = ${next.rdv_at}, montant = ${next.montant}, frais_gasoil = ${next.frais_gasoil}, frais_materiel = ${next.frais_materiel},
+            rdv_at = ${next.rdv_at}, relance_at = ${next.relance_at}, nb_relances = ${nbRelances}, montant = ${next.montant}, frais_gasoil = ${next.frais_gasoil}, frais_materiel = ${next.frais_materiel},
             frais_autres = ${next.frais_autres}, frais_detail = ${next.frais_detail}, avis_demande = ${next.avis_demande}, avis_at = ${avisAt},
             note = ${next.note}, ville = ${next.ville}, nom = ${next.nom}, besoin = ${next.besoin}, telephone = ${next.telephone},
             termine_at = ${termineAt}, updated_at = now(), updated_by = ${me.name} where id = ${b.id}`;
         const changes = [];
-        if (statutChange) changes.push('état : ' + next.statut);
+        if (p.statut === 'relancer') changes.push('pas répondu, à relancer (tentative ' + nbRelances + ')');
+        else if (statutChange) changes.push('état : ' + next.statut);
         if (next.source !== c.source) changes.push('source : ' + next.source);
         if (String(next.montant) !== String(c.montant)) changes.push('montant : ' + (next.montant ?? '—') + ' €');
         if (next.avis_demande !== c.avis_demande) changes.push('avis demandé : ' + (next.avis_demande ? 'oui' : 'non'));

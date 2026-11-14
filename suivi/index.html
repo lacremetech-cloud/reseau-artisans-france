@@ -49,10 +49,21 @@ main{max-width:720px;margin:0 auto;padding:12px 16px calc(96px + env(safe-area-i
 .chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;white-space:nowrap}
 .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .chip b{font-weight:800;margin-left:4px}
-.search{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:#fff;margin-bottom:10px}
+.searchbox{position:sticky;top:calc(100px + env(safe-area-inset-top));z-index:15;display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:4px 6px 4px 12px;margin-bottom:10px;box-shadow:var(--sh)}
+.searchbox:focus-within{border-color:var(--blue)}
+.searchbox input{flex:1;border:0;outline:0;padding:10px 0;font-size:16px;background:transparent;min-width:0}
+.searchbox button{border:0;background:#eef0f3;border-radius:8px;width:32px;height:32px;font-size:14px}
+.qinfo{font-size:13px;color:var(--muted);margin:-4px 0 8px 4px}
 /* cartes lead */
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin-bottom:10px}
-.lead{display:block;width:100%;text-align:left;border:0}
+.lead{display:block;width:100%;text-align:left;border:1px solid transparent;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
+.lead:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(10,31,58,.08),0 12px 28px rgba(10,31,58,.14);border-color:var(--blue)}
+.lead:active{transform:translateY(0)}
+.lead .nm{display:flex;align-items:center;gap:6px}
+.lead .nm .go{margin-left:auto;color:var(--blue);font-size:22px;line-height:1;transition:transform .12s ease}
+.lead:hover .nm .go{transform:translateX(3px)}
+.lead:hover .nm .who{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
+.tbl tr[data-id]:hover td{background:#eef3fa}
 .lead.new{border-left:5px solid var(--red)}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .src{font-size:12px;font-weight:700;border-radius:6px;padding:3px 8px;background:#e8eef9;color:var(--blue)}
@@ -63,11 +74,13 @@ main{max-width:720px;margin:0 auto;padding:12px 16px calc(96px + env(safe-area-i
 .lead .sub{color:var(--muted);font-size:14px}
 .lead .resume{margin-top:6px;font-size:14px;line-height:1.35;color:var(--ink);background:#f6f8fc;border-radius:8px;padding:7px 9px}
 .pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:#eef0f3}
-.pill.nouveau{background:#fde2e4;color:var(--red)}.pill.rappele{background:#e8eef9;color:var(--blue)}.pill.devis{background:var(--warn-bg);color:var(--warn)}
+.pill.nouveau{background:#fde2e4;color:var(--red)}.pill.relancer{background:#ffedd5;color:#c2410c}.pill.rappele{background:#e8eef9;color:var(--blue)}.pill.devis{background:var(--warn-bg);color:var(--warn)}
 .pill.planifie{background:#e9e5fb;color:#5b3fd1}.pill.termine{background:var(--ok-bg);color:var(--ok)}.pill.perdu,.pill.faux{background:#eef0f3;color:#6b7280}
 .qa{display:flex;gap:8px;margin-top:10px}
 .qa a{flex:1;text-align:center;text-decoration:none;font-weight:700;border-radius:10px;padding:10px;font-size:14px}
-.call{background:var(--red);color:#fff}.wa{background:#e7f8ee;color:#128c4a}
+.call{background:var(--red);color:#fff}
+.qa .nr{flex:none;width:48px;border:1px solid #fdba74;background:#fff7ed;border-radius:10px;font-size:18px}
+.qa .nr:hover{background:#ffedd5}.wa{background:#e7f8ee;color:#128c4a}
 .empty{text-align:center;color:var(--muted);padding:40px 10px}
 /* bouton + */
 .fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:32px;font-weight:300;box-shadow:0 8px 24px rgba(214,40,57,.4);z-index:30}
@@ -84,6 +97,7 @@ h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 .opt{border:2px solid var(--line);background:#fff;border-radius:12px;padding:14px 8px;font-weight:700;font-size:14px;text-align:center}
 .opt.on{border-color:var(--navy);background:var(--navy);color:#fff}
 .opt.sm{padding:10px 6px;font-size:13px}
+.opt.relance-btn{grid-column:1/-1;border-color:#fdba74;color:#c2410c}.opt.relance-btn.on{background:#c2410c;border-color:#c2410c;color:#fff}
 label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:10px 0 4px}
 .inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;font-size:16px}
 textarea.inp{min-height:70px;resize:vertical}
@@ -144,7 +158,8 @@ textarea.inp{min-height:70px;resize:vertical}
   </nav>
   <main>
     <section id="tab-leads">
-      <input class="search" id="q" type="search" placeholder="Chercher un nom, un numéro, une ville…">
+      <div class="searchbox"><span aria-hidden="true">🔎</span><input id="q" type="search" placeholder="Rechercher : nom, numéro, ville, besoin…" autocomplete="off"><button id="qclear" class="hide" aria-label="Effacer">✕</button></div>
+      <div id="qinfo" class="qinfo hide"></div>
       <div class="chips" id="filters"></div>
       <div id="list"></div>
     </section>
@@ -165,8 +180,9 @@ const API = '/api/suivi';
 const REVIEW = 'https://g.page/r/Cd-3QXPqZL6kEBM/review';
 const SRC = {lsa:'Google (LSA)',google_ads:'Google Ads',meta:'Facebook / Insta',site:'Site web',fiche_google:'Fiche Google',bouche_a_oreille:'Bouche-à-oreille',autre:'Autre',inconnu:'À préciser'};
 const SRC_PICK = ['lsa','google_ads','meta','fiche_google','site','bouche_a_oreille','autre'];
-const ST = {nouveau:'Nouveau',rappele:'Rappelé',devis:'Devis envoyé',planifie:'Intervention planifiée',termine:'Terminé',perdu:'Perdu',faux:'Faux lead'};
-const ST_PICK = ['rappele','devis','planifie','termine','perdu','faux'];
+const ST = {nouveau:'Nouveau',relancer:'À relancer',rappele:'Rappelé',devis:'Devis envoyé',planifie:'Intervention planifiée',termine:'Terminé',perdu:'Perdu',faux:'Faux lead'};
+const ST_PICK = ['relancer','rappele','devis','planifie','termine','perdu','faux'];
+const ST_BTN = {relancer:'📵 Pas répondu → à relancer',rappele:'✅ Eu au téléphone'};
 const PLAT = {meta:'Meta (Facebook / Insta)',google_ads:'Google Ads',lsa:'Google LSA'};
 const RATE = 0.25;
 let S = {token:null,name:'',role:'',leads:[],filter:'todo',q:'',period:'month',cur:null,dirty:false};
@@ -208,23 +224,30 @@ function buildPad(){
 function logout(){store('raf_s');S.token=null;$('#app').classList.add('hide');$('#sheet').classList.add('hide');$('#login').classList.remove('hide');pin='';drawDots()}
 
 /* ---------- liste ---------- */
-const FILTERS=[['todo','À traiter',l=>['nouveau','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],
+const FILTERS=[['todo','À traiter',l=>['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],['relancer','À relancer',l=>l.statut==='relancer'],
   ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Terminés',l=>l.statut==='termine'],['all','Tous',()=>true]];
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[\s.\-]/g,'');
 function drawFilters(){$('#filters').innerHTML=FILTERS.map(([k,l,f])=>`<button class="chip ${S.filter===k?'on':''}" data-f="${k}">${l}<b>${S.leads.filter(f).length}</b></button>`).join('')}
 function drawList(){
   drawFilters();
-  const f=FILTERS.find(x=>x[0]===S.filter)[2];const q=S.q.toLowerCase().replace(/\s/g,'');
-  let rows=S.leads.filter(f).filter(l=>!q||[l.nom,l.telephone,l.ville,l.besoin,SRC[l.source],l.note,l.message].join(' ').toLowerCase().replace(/\s/g,'').includes(q));
+  const f=FILTERS.find(x=>x[0]===S.filter)[2];const q=norm(S.q);
+  // une recherche cherche dans TOUS les clients, quel que soit le filtre
+  let rows=q?S.leads.filter(l=>norm([l.nom,l.telephone,fmtTel(l.telephone),l.ville,l.besoin,SRC[l.source],ST[l.statut],l.note,l.message,resume(l)].join(' ')).includes(q)):S.leads.filter(f);
+  $('#qinfo').classList.toggle('hide',!q);$('#qclear').classList.toggle('hide',!S.q);
+  if(q)$('#qinfo').textContent=rows.length+' résultat'+(rows.length>1?'s':'')+' dans tous les clients';
+  $('#filters').style.opacity=q?'.45':'1';
+  if(S.filter==='relancer'&&!q)rows.sort((a,b)=>new Date(a.relance_at||a.created_at)-new Date(b.relance_at||b.created_at));
   if(S.filter==='planifie')rows.sort((a,b)=>new Date(a.rdv_at||0)-new Date(b.rdv_at||0));
   $('#list').innerHTML=rows.length?rows.map(l=>`
    <div class="card lead ${l.statut==='nouveau'?'new':''}" data-id="${l.id}">
      <div class="row"><span class="src ${l.source}">${SRC[l.source]||l.source}</span><span class="pill ${l.statut}">${ST[l.statut]}</span><span class="when">${ago(l.created_at)}</span></div>
-     <div class="nm">${esc(l.nom||fmtTel(l.telephone)||'Sans numéro')}</div>
+     <div class="nm"><span class="who">${esc(l.nom||fmtTel(l.telephone)||'Sans numéro')}</span><span class="go" aria-hidden="true">›</span></div>
      <div class="sub">${esc([l.nom&&fmtTel(l.telephone),l.ville].filter(Boolean).join(' · '))}</div>
      <div class="resume">${esc(resume(l))}</div>
+     ${l.statut==='relancer'?`<div class="sub" style="color:#c2410c;font-weight:700;margin-top:4px">📵 Pas répondu${l.nb_relances?' · '+l.nb_relances+' tentative'+(l.nb_relances>1?'s':''):''}${l.relance_at?' · rappeler '+dt(l.relance_at):''}</div>`:''}
      ${l.statut==='planifie'&&l.rdv_at?`<div class="sub" style="color:#5b3fd1;font-weight:700;margin-top:4px">📅 ${dt(l.rdv_at)}</div>`:''}
      ${l.statut==='termine'?`<div class="sub" style="margin-top:4px">${l.montant!=null?'💶 '+eur(l.montant):'⚠️ Montant à remplir'}${l.photos?' · 📷 '+l.photos:''} · ${l.avis_demande?'⭐ avis demandé':'avis pas demandé'}</div>`:''}
-     ${l.telephone&&['nouveau','rappele','devis','planifie'].includes(l.statut)?`<div class="qa"><a class="call" href="tel:${l.telephone}">📞 Appeler</a><a class="wa" href="https://wa.me/${waTel(l.telephone)}" target="_blank" rel="noopener">WhatsApp</a></div>`:''}
+     ${l.telephone&&['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)?`<div class="qa"><a class="call" href="tel:${l.telephone}">📞 Appeler</a><a class="wa" href="https://wa.me/${waTel(l.telephone)}" target="_blank" rel="noopener">WhatsApp</a>${['nouveau','relancer'].includes(l.statut)?`<button class="nr" data-nr="${l.id}" title="Pas répondu : à relancer">📵</button>`:''}</div>`:''}
    </div>`).join(''):`<div class="empty">Aucun client ici pour l'instant.</div>`;
 }
 /* petite phrase qui dit qui est le client */
@@ -261,8 +284,24 @@ function drawLead(){
       ${l.message?`<div class="sub" style="margin-top:10px;white-space:pre-wrap">${esc(l.message)}</div>`:''}
     </div>
 
+    <h3>Infos du client</h3>
+    <label class="f">Nom</label><input class="inp" data-k="nom" value="${esc(l.nom||'')}">
+    <div class="money">
+      <div><label class="f">Téléphone</label><input class="inp" type="tel" data-k="telephone" value="${esc(l.telephone||'')}"></div>
+      <div><label class="f">Ville</label><input class="inp" data-k="ville" value="${esc(l.ville||'')}"></div>
+    </div>
+    <label class="f">Besoin</label><input class="inp" data-k="besoin" value="${esc(l.besoin||'')}" placeholder="ex : fuite sous évier">
+    <label class="f">Note (la 1re phrase s'affiche sur la carte du client)</label><textarea class="inp" data-k="note" placeholder="ex : Mme Martin, fuite sous l'évier, rappeler après 18h">${esc(l.note||'')}</textarea>
+
     <h3>Où en est ce client ?</h3>
-    <div class="grid2">${ST_PICK.map(k=>`<button class="opt ${l.statut===k?'on':''}" data-st="${k}">${ST[k]}</button>`).join('')}</div>
+    <div class="grid2">${ST_PICK.map(k=>`<button class="opt ${l.statut===k?'on':''} ${k==='relancer'?'relance-btn':''}" data-st="${k}">${ST_BTN[k]||ST[k]}</button>`).join('')}</div>
+
+    <div class="${l.statut==='relancer'?'':'hide'}">
+      <div class="calc" style="background:#fff7ed;color:#9a3412">📵 Pas répondu${l.nb_relances?' · '+l.nb_relances+' tentative'+(l.nb_relances>1?'s':''):''}. Chaque appui sur « Pas répondu » compte une tentative.</div>
+      <label class="f">Rappeler le</label>
+      <input class="inp" type="datetime-local" data-k="relance_at" value="${localInput(l.relance_at)}">
+      <div class="grid3" style="margin-top:8px"><button class="opt sm" data-rl="1h">Dans 1 h</button><button class="opt sm" data-rl="soir">Ce soir 18 h</button><button class="opt sm" data-rl="demain">Demain 9 h</button></div>
+    </div>
 
     <div class="${l.statut==='planifie'?'':'hide'}">
       <label class="f">Date et heure de l'intervention</label>
@@ -305,15 +344,6 @@ function drawLead(){
     <h3>Source du client</h3>
     <div class="grid3">${SRC_PICK.map(k=>`<button class="opt sm ${l.source===k?'on':''}" data-src="${k}">${SRC[k]}</button>`).join('')}</div>
 
-    <h3>Infos</h3>
-    <label class="f">Nom</label><input class="inp" data-k="nom" value="${esc(l.nom||'')}">
-    <div class="money">
-      <div><label class="f">Téléphone</label><input class="inp" type="tel" data-k="telephone" value="${esc(l.telephone||'')}"></div>
-      <div><label class="f">Ville</label><input class="inp" data-k="ville" value="${esc(l.ville||'')}"></div>
-    </div>
-    <label class="f">Besoin</label><input class="inp" data-k="besoin" value="${esc(l.besoin||'')}" placeholder="ex : fuite sous évier">
-    <label class="f">Note (la 1re phrase s'affiche sur la carte du client)</label><textarea class="inp" data-k="note" placeholder="ex : Mme Martin, fuite sous l'évier, rappeler après 18h">${esc(l.note||'')}</textarea>
-
     <h3>Historique</h3>
     <div class="hist">${l._events.map(e=>`<div>${dt(e.at)} · <b>${esc(e.by_user||'')}</b> · ${esc(e.detail||e.action)}</div>`).join('')||'<div>—</div>'}</div>
   </div>
@@ -342,6 +372,8 @@ $('#sheet').addEventListener('click',async e=>{
   if(t.dataset.avis!==undefined){await patch({...collect(),avis_demande:t.dataset.avis==='1'},t.dataset.avis==='1'?'Avis demandé ✔':'');S.dirty=false;return}
   if(t.dataset.sendreview!==undefined){if(!S.cur.avis_demande)patch({avis_demande:true});return}
   if(t.dataset.src){await patch({...collect(),source:t.dataset.src},'Source enregistrée');S.dirty=false;return}
+  if(t.dataset.rl){const d=new Date();if(t.dataset.rl==='1h')d.setHours(d.getHours()+1);else if(t.dataset.rl==='soir')d.setHours(18,0,0,0);else{d.setDate(d.getDate()+1);d.setHours(9,0,0,0)}
+    await patch({...collect(),relance_at:d.toISOString()},'Rappel prévu '+dt(d));S.dirty=false;return}
   if(t.dataset.photo!==undefined){$('#file').click();return}
   if(t.dataset.save!==undefined){t.classList.add('spin');S.dirty=false;await patch(collect(),'Enregistré ✔');return}
 });
@@ -440,7 +472,10 @@ document.querySelector('nav.tabs').onclick=e=>{const b=e.target.closest('[data-t
 $('#filters').onclick=e=>{const b=e.target.closest('[data-f]');if(b){S.filter=b.dataset.f;drawList()}};
 $('#periods').onclick=e=>{const b=e.target.closest('[data-p]');if(b){S.period=b.dataset.p;drawDash().catch(err=>toast(err.message))}};
 $('#q').oninput=e=>{S.q=e.target.value;drawList()};
-$('#list').onclick=e=>{if(e.target.closest('a'))return;const c=e.target.closest('[data-id]');if(c)openLead(c.dataset.id).catch(err=>toast(err.message))};
+$('#qclear').onclick=()=>{S.q='';$('#q').value='';drawList();$('#q').focus()};
+$('#list').onclick=async e=>{const nr=e.target.closest('[data-nr]');
+  if(nr){try{await call('update',{id:nr.dataset.nr,patch:{statut:'relancer'}});toast('Pas répondu : à relancer ✔');refresh()}catch(err){toast(err.message)}return}
+  if(e.target.closest('a'))return;const c=e.target.closest('[data-id]');if(c)openLead(c.dataset.id).catch(err=>toast(err.message))};
 $('#dash').onclick=e=>{const c=e.target.closest('tr[data-id]');if(c)openLead(c.dataset.id).catch(err=>toast(err.message))};
 $('#add').onclick=openNew;
 $('#who').onclick=()=>{if(confirm('Se déconnecter ?'))logout()};
