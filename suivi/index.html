@@ -111,6 +111,10 @@ textarea.inp{min-height:70px;resize:vertical}
 .save button{width:100%;max-width:688px;display:block;margin:0 auto;border:0;border-radius:14px;padding:16px;font-weight:800;font-size:17px;background:var(--ok);color:#fff;box-shadow:0 8px 20px rgba(21,128,61,.3)}
 .hist{font-size:13px;color:var(--muted)}
 .hist div{padding:6px 0;border-bottom:1px solid var(--line)}
+.link-btn{display:block;width:100%;margin:10px 0 0;color:var(--blue)!important;border-style:dashed}
+.picker .item{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.picker .item:hover{border-color:var(--blue);background:#f5f8ff}
+.picker .item b{display:block}
 .btn2{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;font-weight:700;font-size:14px;color:#128c4a}
 .calc{background:#f6f8fc;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px}
 .calc div{display:flex;justify-content:space-between;padding:2px 0}
@@ -232,7 +236,7 @@ function drawList(){
   drawFilters();
   const f=FILTERS.find(x=>x[0]===S.filter)[2];const q=norm(S.q);
   // une recherche cherche dans TOUS les clients, quel que soit le filtre
-  let rows=q?S.leads.filter(l=>norm([l.nom,l.telephone,fmtTel(l.telephone),l.ville,l.besoin,SRC[l.source],ST[l.statut],l.note,l.message,resume(l)].join(' ')).includes(q)):S.leads.filter(f);
+  let rows=q?S.leads.filter(l=>norm([l.nom,l.telephone,fmtTel(l.telephone),l.autres_tel,l.ville,l.besoin,SRC[l.source],ST[l.statut],l.note,l.message,resume(l)].join(' ')).includes(q)):S.leads.filter(f);
   $('#qinfo').classList.toggle('hide',!q);$('#qclear').classList.toggle('hide',!S.q);
   if(q)$('#qinfo').textContent=rows.length+' résultat'+(rows.length>1?'s':'')+' dans tous les clients';
   $('#filters').style.opacity=q?'.45':'1';
@@ -281,8 +285,10 @@ function drawLead(){
       <div class="row"><span class="src ${l.source}">${SRC[l.source]}</span>${l.campagne?`<span class="when" style="margin-left:0">${esc(l.campagne)}</span>`:''}<span class="when">${dt(l.created_at)}</span></div>
       <div class="big-tel">${esc(fmtTel(l.telephone)||'Pas de numéro')}</div>
       ${l.telephone?`<div class="qa" style="margin-top:0"><a class="call" href="tel:${l.telephone}">📞 Appeler</a><a class="wa" href="https://wa.me/${waTel(l.telephone)}" target="_blank" rel="noopener">WhatsApp</a></div>`:''}
+      ${l.autres_tel?`<div class="sub" style="margin-top:8px">Autre(s) numéro(s) : ${l.autres_tel.split(/,\s*/).map(t=>`<a href="tel:${esc(t)}" style="color:var(--blue);font-weight:700">${esc(fmtTel(t))}</a>`).join(' · ')}</div>`:''}
       ${l.message?`<div class="sub" style="margin-top:10px;white-space:pre-wrap">${esc(l.message)}</div>`:''}
     </div>
+    <button class="btn2 link-btn" data-merge>🔗 C'est le même client qu'une autre fiche ? Rattacher</button>
 
     <h3>Infos du client</h3>
     <label class="f">Nom</label><input class="inp" data-k="nom" value="${esc(l.nom||'')}">
@@ -374,10 +380,33 @@ $('#sheet').addEventListener('click',async e=>{
   if(t.dataset.src){await patch({...collect(),source:t.dataset.src},'Source enregistrée');S.dirty=false;return}
   if(t.dataset.rl){const d=new Date();if(t.dataset.rl==='1h')d.setHours(d.getHours()+1);else if(t.dataset.rl==='soir')d.setHours(18,0,0,0);else{d.setDate(d.getDate()+1);d.setHours(9,0,0,0)}
     await patch({...collect(),relance_at:d.toISOString()},'Rappel prévu '+dt(d));S.dirty=false;return}
+  if(t.dataset.merge!==undefined){openPicker();return}
   if(t.dataset.photo!==undefined){$('#file').click();return}
   if(t.dataset.save!==undefined){t.classList.add('spin');S.dirty=false;await patch(collect(),'Enregistré ✔');return}
 });
 $('#sheet').addEventListener('input',e=>{if(e.target.dataset.k&&!S.dirty){S.dirty=true;$('#sheet .save').classList.remove('hide')}});
+/* rattacher la fiche ouverte à une autre fiche (fusion) */
+function openPicker(){
+  const cur=S.cur;if(!cur)return;
+  const box=document.createElement('div');box.className='sheet picker';box.id='picker';
+  box.innerHTML=`<div class="top"><button data-pclose>← Annuler</button><div class="t">Rattacher à quel client ?</div></div>
+   <div class="in"><div class="calc" style="margin-top:0">Choisis la fiche du même client. Les deux fiches n'en feront plus qu'une : numéros, notes, photos, montant et historique sont regroupés.</div>
+   <div class="searchbox" style="position:static;margin-top:10px"><span>🔎</span><input id="pq" type="search" placeholder="Nom, numéro, ville…" autocomplete="off"></div>
+   <div id="plist"></div></div>`;
+  document.body.appendChild(box);
+  const draw=()=>{const q=norm($('#pq').value);
+    const rows=S.leads.filter(l=>l.id!==cur.id).filter(l=>!q||norm([l.nom,l.telephone,fmtTel(l.telephone),l.autres_tel,l.ville,l.besoin,l.note,resume(l)].join(' ')).includes(q)).slice(0,60);
+    $('#plist').innerHTML=rows.map(l=>`<button class="item" data-into="${l.id}"><b>${esc(l.nom||fmtTel(l.telephone)||l.ville||'Sans nom')}</b><span class="sub">${esc(resume(l))}</span><br><span class="pill ${l.statut}">${ST[l.statut]}</span> <span class="when" style="margin-left:6px">${ago(l.created_at)}</span></button>`).join('')||'<div class="empty">Aucun client trouvé</div>'};
+  $('#pq').oninput=draw;draw();setTimeout(()=>$('#pq').focus(),50);
+  box.onclick=async e=>{
+    if(e.target.closest('[data-pclose]')){box.remove();return}
+    const it=e.target.closest('[data-into]');if(!it)return;
+    const tgt=S.leads.find(l=>l.id===it.dataset.into);
+    const nom=x=>x.nom||fmtTel(x.telephone)||x.ville||'cette fiche';
+    if(!confirm(`Rattacher « ${nom(cur)} » à « ${nom(tgt)} » ?\nLes deux fiches n'en feront plus qu'une.`))return;
+    try{const r=await call('merge',{from:cur.id,into:tgt.id});box.remove();toast('Fiches rattachées ✔');await refresh();openLead(r.id)}catch(err){toast(err.message)}
+  };
+}
 function closeSheet(){$('#sheet').classList.add('hide');S.cur=null;S.dirty=false}
 window.addEventListener('popstate',()=>{if(!$('#sheet').classList.contains('hide'))closeSheet()});
 

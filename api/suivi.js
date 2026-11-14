@@ -72,7 +72,7 @@ async function upsertLead(d, by) {
   }
   if (tel) {
     // même numéro dans les 3 derniers jours et pas clôturé : on rattache au lead existant
-    const ex = await sql`select id, source from leads where telephone = ${tel}
+    const ex = await sql`select id, source from leads where (telephone = ${tel} or position(${tel} in coalesce(autres_tel, '')) > 0)
       and created_at > ${created}::timestamptz - interval '3 days' and statut not in ('termine','perdu','faux')
       order by created_at desc limit 1`;
     if (ex.length) {
@@ -162,7 +162,7 @@ export default async function handler(req, res) {
     switch (action) {
       case 'leads': {
         const rows = await sql`select l.id, l.created_at, l.source, l.campagne, l.lead_type, l.ville, l.nom, l.telephone, l.besoin, l.statut, l.statut_at,
-            l.rdv_at, l.relance_at, l.nb_relances, l.montant, l.avis_demande, l.updated_by, left(l.note, 200) note, left(l.message, 200) message,
+            l.rdv_at, l.relance_at, l.nb_relances, l.montant, l.avis_demande, l.updated_by, left(l.note, 200) note, left(l.message, 200) message, l.autres_tel,
             (select count(*)::int from lead_photos p where p.lead_id = l.id) photos
           from leads l order by l.created_at desc limit 400`;
         return send(res, 200, { leads: rows });
@@ -227,6 +227,39 @@ export default async function handler(req, res) {
         const r = await sql`insert into lead_photos(lead_id, mime, data, by_user) values (${b.id}, ${m[1]}, ${buf}, ${me.name}) returning id`;
         await logEvent(b.id, me.name, 'photo', 'Photo ajoutée');
         return send(res, 200, { id: r[0].id });
+      }
+      case 'merge': {
+        // Rattache la fiche « from » à la fiche « into » : tout est regroupé dans « into », puis « from » est supprimée.
+        if (!b.from || !b.into || b.from === b.into) return send(res, 400, { error: 'fiches invalides' });
+        const rows = await sql`select * from leads where id in (${b.from}, ${b.into})`;
+        const A = rows.find((r) => r.id === b.from), B = rows.find((r) => r.id === b.into);
+        if (!A || !B) return send(res, 404, { error: 'introuvable' });
+        const RANK = { faux: 0, perdu: 1, nouveau: 2, relancer: 3, rappele: 4, devis: 5, planifie: 6, termine: 7 };
+        const statut = (RANK[A.statut] ?? 0) > (RANK[B.statut] ?? 0) ? A.statut : B.statut;
+        const pick = (k) => (B[k] !== null && B[k] !== undefined && B[k] !== '' ? B[k] : A[k]);
+        const sum = (k) => (+A[k] || 0) + (+B[k] || 0);
+        const tels = new Set([...(B.autres_tel || '').split(/[,\s]+/), ...(A.autres_tel || '').split(/[,\s]+/), A.telephone].filter((t) => t && t !== pick('telephone')));
+        const notes = [B.note, A.note].filter(Boolean).join('\n');
+        const msgs = [B.message, A.message].filter(Boolean).join('\n');
+        const montant = A.montant != null && B.montant != null ? sum('montant') : pick('montant');
+        await sql`update leads set
+            nom = ${pick('nom')}, telephone = ${pick('telephone')}, autres_tel = ${[...tels].join(', ') || null},
+            ville = ${pick('ville')}, besoin = ${pick('besoin')}, campagne = ${pick('campagne')}, lead_type = ${pick('lead_type')},
+            source = ${B.source !== 'inconnu' ? B.source : A.source}, ext_id = ${pick('ext_id')},
+            created_at = ${new Date(Math.min(+new Date(A.created_at), +new Date(B.created_at)))},
+            statut = ${statut}, statut_at = now(), rdv_at = ${pick('rdv_at')}, relance_at = ${pick('relance_at')},
+            nb_relances = ${(A.nb_relances || 0) + (B.nb_relances || 0)},
+            montant = ${montant}, frais_gasoil = ${sum('frais_gasoil')}, frais_materiel = ${sum('frais_materiel')}, frais_autres = ${sum('frais_autres')},
+            frais_detail = ${[B.frais_detail, A.frais_detail].filter(Boolean).join(' · ') || null},
+            avis_demande = ${!!(A.avis_demande || B.avis_demande)}, avis_at = ${pick('avis_at')},
+            termine_at = ${statut === 'termine' ? pick('termine_at') || new Date() : null},
+            note = ${notes || null}, message = ${msgs || null}, updated_at = now(), updated_by = ${me.name}
+          where id = ${B.id}`;
+        await sql`update lead_photos set lead_id = ${B.id} where lead_id = ${A.id}`;
+        await sql`update lead_events set lead_id = ${B.id} where lead_id = ${A.id}`;
+        await sql`delete from leads where id = ${A.id}`;
+        await logEvent(B.id, me.name, 'fusion', `Fiche rattachée : ${A.nom || A.telephone || A.ville || 'sans nom'}${A.montant != null ? ' (' + A.montant + ' €)' : ''}`);
+        return send(res, 200, { ok: true, id: B.id });
       }
       case 'photo_delete': {
         await sql`delete from lead_photos where id = ${b.photo_id}`;
