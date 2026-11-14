@@ -52,7 +52,8 @@ async function readBody(req) {
   if (typeof req.body === 'string') { try { return JSON.parse(req.body); } catch { return {}; } }
   const chunks = [];
   for await (const c of req) chunks.push(c);
-  try { return JSON.parse(Buffer.concat(chunks).toString() || '{}'); } catch { return {}; }
+  const raw = Buffer.concat(chunks).toString();
+  try { return JSON.parse(raw || '{}'); } catch { return Object.fromEntries(new URLSearchParams(raw)); }
 }
 async function logEvent(leadId, by, action, detail) {
   await sql`insert into lead_events(lead_id, by_user, action, detail) values (${leadId}, ${by}, ${action}, ${detail})`;
@@ -61,7 +62,8 @@ async function logEvent(leadId, by, action, detail) {
 // ---------- création / dédoublonnage d'un lead ----------
 async function upsertLead(d, by) {
   const tel = normPhone(d.telephone);
-  const ext = txt(d.ext_id, 200);
+  // un identifiant vide côté Make donne « lsa- » ou « fb- » : on l'ignore
+  const ext = /^[a-z]+-$/.test(String(d.ext_id || '')) ? null : txt(d.ext_id, 200);
   const source = SOURCES.includes(d.source) ? d.source : 'inconnu';
   const created = d.created_at ? new Date(d.created_at) : new Date();
   if (ext) {
