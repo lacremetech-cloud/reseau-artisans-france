@@ -133,7 +133,7 @@ export default async function handler(req, res) {
         const k = r.day + '|' + r.platform;
         if (seen.has(k)) continue;
         seen.add(k);
-        await sql`delete from ad_spend where day = ${r.day} and platform = ${r.platform}`;
+        await sql`delete from ad_spend where day = ${r.day} and platform = ${r.platform} and campagne <> 'avoir'`;
       }
       let n = 0;
       for (const r of rows) {
@@ -271,7 +271,7 @@ export default async function handler(req, res) {
       case 'spend_set': {
         if (!PLATFORMS.includes(b.platform) || !b.day) return send(res, 400, { error: 'données' });
         // La saisie manuelle remplace le montant du jour pour cette plateforme.
-        await sql`delete from ad_spend where day = ${b.day} and platform = ${b.platform}`;
+        await sql`delete from ad_spend where day = ${b.day} and platform = ${b.platform} and campagne <> 'avoir'`;
         await sql`insert into ad_spend(day, platform, campagne, amount, estimated, updated_at)
           values (${b.day}, ${b.platform}, 'saisie', ${num(b.amount) || 0}, false, now())`;
         return send(res, 200, { ok: true });
