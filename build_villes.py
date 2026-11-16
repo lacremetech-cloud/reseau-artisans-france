@@ -1,9 +1,11 @@
 """Génère une page « plombier + ville » par commune à partir de la page d'accueil (urgence).
 Chaque page garde la même base (services, engagements, avis, FAQ) et ajoute un contenu propre à la ville.
 Lancer : python3 build_villes.py"""
-import json, os, re
+import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import seo
 BASE = open(os.path.join(HERE, "index.html"), encoding="utf-8").read()
 TEL = "+33623832029"
 
@@ -307,6 +309,15 @@ VILLES = [
              "De l'autre côté du Rhône, Annonay et son bassin sont couverts par la même équipe."],
       faq=[("Venez-vous à Roussillon et au Péage ?", "Oui, ainsi qu'à Salaise-sur-Sanne, Saint-Maurice-l'Exil, Chanas et Sablons."),
            ("Êtes-vous loin ?", "Non, nous sommes basés à Annonay, à une vingtaine de minutes.")]),
+ dict(slug="plombier-vienne", ville="Vienne", cp="38200", dep="Isère",
+      quartiers=["Centre historique", "Estressin", "Malissol", "Saint-Germain", "L'Isle", "Pipet", "Charlemagne"],
+      voisines=["Pont-Évêque", "Estrablin", "Seyssuel", "Jardin", "Chuzelles", "Villette-de-Vienne", "Septème", "Saint-Maurice-l'Exil", "Le Péage-de-Roussillon"],
+      intro="Vienne et le pays viennois, au bord du Rhône, font partie de notre zone d'intervention en Isère.",
+      local=["Dans le centre historique de Vienne, autour de la cathédrale Saint-Maurice et du théâtre antique, beaucoup d'immeubles sont anciens : colonnes d'eau, évacuations en fonte et raccords fatigués sont à l'origine de nombreuses fuites et canalisations bouchées.",
+             "Dans les quartiers résidentiels comme Estressin, Malissol ou Saint-Germain, et dans les communes autour (Pont-Évêque, Estrablin, Seyssuel), on intervient surtout pour des chauffe-eau en panne, des WC qui fuient et des recherches de fuite quand le compteur tourne.",
+             "En copropriété, on vous aide à savoir si la fuite vient de chez vous ou des parties communes, et on remet un rapport d'intervention pour le syndic et l'assurance. L'heure d'arrivée réaliste vous est donnée au téléphone."],
+      faq=[("Intervenez-vous à Vienne et dans le pays viennois ?", "Oui : Vienne, Pont-Évêque, Estrablin, Seyssuel, Jardin, Chuzelles, Villette-de-Vienne, Septème… et plus au sud Saint-Maurice-l'Exil et Le Péage-de-Roussillon. L'heure d'arrivée vous est donnée au téléphone."),
+           ("Pouvez-vous intervenir dans un immeuble ancien du centre de Vienne ?", "Oui. On localise l'origine de la fuite ou du bouchon, on répare, et on fournit le rapport pour le syndic et l'assurance en cas de dégât des eaux.")]),
  dict(slug="plombier-moirans", ville="Moirans", cp="38430", dep="Isère",
       voisines=["Voiron", "Saint-Jean-de-Moirans", "Vourey", "Rives", "Coublevie", "Voreppe"],
       intro="Moirans, entre Voiron et Grenoble, fait partie de notre secteur dans le pays voironnais.",
@@ -351,14 +362,24 @@ def page(v):
   </section>'''
     s = s.replace(zones, new_zones, 1)
     # Bloc local inséré avant les urgences
+    proches = ", ".join(v["voisines"][:4])
+    bref = (f"<p class=\"bref\"><b>En bref :</b> Réseau Artisans France est une entreprise de plomberie et de chauffage "
+            f"qui intervient à {V} ({CP}) et dans les communes voisines ({proches}…) : fuite d'eau, WC et canalisations bouchés, "
+            f"chauffe-eau en panne, dépannage et remplacement de chaudière gaz, rénovation de salle de bain. "
+            f"Intervention 24h/24 et 7j/7, devis écrit gratuit avant les travaux, paiement après l'intervention, au prix juste. "
+            f"Téléphone : 06 23 83 20 29.</p>")
+    autres = [x for x in VILLES if x is not v and x["dep"] == v["dep"]][:8]
+    liens_villes = " · ".join(f'<a href="../{x["slug"]}/">Plombier à {x["ville"]}</a>' for x in autres)
     local = f'''<section id="local">
     <div class="wrap">
       <h2>Votre plombier à {V}</h2>
+      {bref}
       <p class="sub">{v["intro"]}</p>
       {"".join(f"<p>{p}</p>" for p in v["local"])}
       {("<p><b>Quartiers où nous intervenons :</b> " + ", ".join(v["quartiers"]) + ".</p>") if v.get("quartiers") else ""}
       <p>Urgences : <a href="../fuite-d-eau/">fuite d'eau</a> · <a href="../debouchage/">WC et canalisations bouchés</a> · <a href="../chauffe-eau-en-panne/">chauffe-eau en panne</a> · <a href="../depannage-chaudiere/">chaudière en panne</a>.</p>
       <p>Pour un projet, voir aussi : <a href="../salle-de-bain/">rénovation de salle de bain</a> et <a href="../chaudiere/">remplacement de chaudière gaz</a>.</p>
+      {("<p>Nous intervenons aussi en " + v["dep"] + " : " + liens_villes + ".</p>") if autres else ""}
     </div>
   </section>
   '''
@@ -373,7 +394,7 @@ def page(v):
           "areaServed": [{"@type": "City", "name": x} for x in [V] + v["voisines"]],
           "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "00:00", "closes": "23:59"}}
     s = s.replace("</head>", f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n</head>', 1)
-    return s
+    return seo.enrich(s, url, [(f"Plombier à {V}", url)])
 
 
 if __name__ == "__main__":

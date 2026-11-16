@@ -4,6 +4,8 @@ Ordre : python3 build_problemes.py   (relance build_villes.py en premier, puis g
 import json, os, re, subprocess, sys, datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import seo
 TEL = "+33623832029"
 SITE = "https://reseauartisansfrance.com"
 
@@ -20,7 +22,8 @@ COMMUNES = {
              "Tournon-sur-Rhône", "Mauves", "Saint-Jean-de-Muzols", "Lemps", "Glun", "Privas", "La Voulte-sur-Rhône", "Le Pouzin", "Le Teil"],
  "Isère": ["Grenoble", "Échirolles", "Saint-Martin-d'Hères", "Fontaine", "Seyssinet-Pariset", "Seyssins", "Sassenage", "Saint-Égrève",
            "Meylan", "La Tronche", "Eybens", "Le Pont-de-Claix", "Gières", "Poisat", "Claix", "Montbonnot-Saint-Martin", "Saint-Ismier",
-           "Voiron", "Coublevie", "Moirans", "Saint-Jean-de-Moirans", "Rives", "Voreppe", "Chanas", "Roussillon", "Le Péage-de-Roussillon", "Salaise-sur-Sanne", "Saint-Maurice-l'Exil"],
+           "Voiron", "Coublevie", "Moirans", "Saint-Jean-de-Moirans", "Rives", "Voreppe", "Chanas", "Roussillon", "Le Péage-de-Roussillon", "Salaise-sur-Sanne", "Saint-Maurice-l'Exil",
+           "Vienne", "Pont-Évêque", "Estrablin", "Seyssuel", "Jardin", "Chuzelles", "Villette-de-Vienne", "Septème", "Sablons"],
 }
 
 PROBLEMES = [
@@ -115,6 +118,7 @@ def page(p, lieu):
     bloc = f'''<section id="probleme">
     <div class="wrap">
       <h2>{p["nom"]}{where} : on s'en occupe</h2>
+      <p class="bref"><b>En bref :</b> {"pour un projet" if p.get("projet") else "en cas de " + p["short"]}{where}, Réseau Artisans France, entreprise de plomberie et de chauffage, {"se déplace pour une visite et un devis gratuits" if p.get("projet") else "intervient 24h/24 et 7j/7"}. Devis écrit avant les travaux, paiement après l'intervention, au prix juste. Téléphone : 06 23 83 20 29.</p>
       <div class="grid g2">
         <div class="card"><h3>Vous reconnaissez ces signes ?</h3><ul>{"".join(f"<li>{x}</li>" for x in p["symptomes"])}</ul></div>
         <div class="card"><h3>Comment on intervient</h3><ol>{"".join(f"<li>{x}</li>" for x in p["etapes"])}</ol></div>
@@ -134,7 +138,8 @@ def page(p, lieu):
                        "address": {"@type": "PostalAddress", "streetAddress": "60 rue des Bouvreuils", "postalCode": "07100", "addressLocality": "Annonay", "addressCountry": "FR"}},
           "areaServed": [{"@type": "City", "name": c} for c in dict.fromkeys(area)]}
     s = s.replace("</head>", f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n</head>', 1)
-    return slug, s
+    crumbs = [(p["nom"], f"{SITE}/{p['slug']}/")] + ([(f"{p['nom']} à {V}", url)] if V else [])
+    return slug, seo.enrich(s, url, crumbs)
 
 
 def update_home(villes):
@@ -152,6 +157,7 @@ def update_home(villes):
           "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "00:00", "closes": "23:59"}}
     s = re.sub(r'<script type="application/ld\+json">.*?</script>\n', "", s, flags=re.S)
     s = s.replace("</head>", f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n</head>', 1)
+    s = seo.enrich(s, SITE + "/", [])
     open(p, "w", encoding="utf-8").write(s)
 
 

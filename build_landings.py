@@ -1,6 +1,8 @@
 """Génère /salle-de-bain/index.html et /chaudiere/index.html à partir d'un gabarit commun.
 Lancer : python3 build_landings.py"""
-import os
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import seo
 
 TEL, TELH = "+33623832029", "06 23 83 20 29"
 ICONS = """<svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -243,5 +245,7 @@ if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
     for p in (SDB, CH):
         os.makedirs(os.path.join(here, p["slug"]), exist_ok=True)
-        open(os.path.join(here, p["slug"], "index.html"), "w").write(page(p))
+        url = f"https://reseauartisansfrance.com/{p['slug']}/"
+        nom = "Rénovation de salle de bain" if p["slug"] == "salle-de-bain" else "Remplacement de chaudière gaz"
+        open(os.path.join(here, p["slug"], "index.html"), "w").write(seo.enrich(page(p), url, [(nom, url)]))
         print(p["slug"])
