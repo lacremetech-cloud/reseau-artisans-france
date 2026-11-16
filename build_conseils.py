@@ -153,7 +153,7 @@ def base():
 
 
 def shell(s, depth, title, desc, url, main, ld):
-    pre = "../" * depth
+    pre = "/"  # liens absolus : fonctionnent avec ou sans « / » final dans l'adresse
     s = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", s, count=1, flags=re.S)
     s = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{desc}">', s, count=1)
     s = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', s, count=1)
@@ -169,12 +169,12 @@ def article(a):
     url = f"{SITE}/conseils/{a['slug']}/"
     img = IMAGES[a["slug"]]
     k = IMG_SECTION.get(a["slug"])
-    fig = (f'<figure class="img-side"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="lazy">'
+    fig = (f'<figure class="img-side"><img src="/assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="lazy">'
            f'<figcaption>{img[2]}</figcaption></figure>')
     sec = "".join(f'<div class="part">{fig if i == k else ""}<h2>{h}</h2>' + "".join(f"<p>{p}</p>" for p in ps) + "</div>"
                   for i, (h, ps) in enumerate(a["sections"]))
     faq = "".join(f"<details><summary>{q}</summary><p>{r}</p></details>" for q, r in a["faq"])
-    autres = " · ".join(f'<a href="../{b["slug"]}/">{b["court"]}</a>' for b in ARTICLES if b is not a)
+    autres = " · ".join(f'<a href="/conseils/{b["slug"]}/">{b["court"]}</a>' for b in ARTICLES if b is not a)
     svc, svc_nom = a["service"]
     av_txt, av_nom = AVIS[a["slug"]]
     avis = (f'<figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div>'
@@ -182,13 +182,13 @@ def article(a):
             f'<a href="{AVIS_URL}" target="_blank" rel="noopener">5,0/5 sur Google, voir tous les avis</a></figcaption></figure>')
     main = f'''  <section class="article">
     <div class="wrap">
-      <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
+      <p class="crumbs"><a href="/">Accueil</a> › <a href="/conseils/">Conseils</a></p>
       <h1>{a["titre"]}</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
       <p class="bref"><b>En bref :</b> {a["bref"]}</p>
       {sec}
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
-        <p><a class="btn btn-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../{svc}/">{svc_nom}</a></p></div>
+        <p><a class="btn btn-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="/{svc}/">{svc_nom}</a></p></div>
       {avis}
     </div>
   </section>
@@ -214,12 +214,12 @@ def hub():
     def carte(a):
         projet = a["service"][0] == "salle-de-bain"
         tag = '<span class="tag-post projet">Projet</span>' if projet else '<span class="tag-post urgence">Urgence</span>'
-        return (f'<a class="card post{" projet" if projet else ""}" href="{a["slug"]}/" data-q="{a["titre"]} {a["desc"]} {a["bref"]}">'
-                f'<span class="thumb"><img src="../assets/{IMAGES[a["slug"]][0]}" alt="" width="{IMAGES[a["slug"]][3]}" height="{IMAGES[a["slug"]][4]}" loading="lazy"></span>{tag}<h3>{a["titre"]}</h3><p>{a["desc"]}</p><span class="lire">Lire le conseil →</span></a>')
+        return (f'<a class="card post{" projet" if projet else ""}" href="/conseils/{a["slug"]}/" data-q="{a["titre"]} {a["desc"]} {a["bref"]}">'
+                f'<span class="thumb"><img src="/assets/{IMAGES[a["slug"]][0]}" alt="" width="{IMAGES[a["slug"]][3]}" height="{IMAGES[a["slug"]][4]}" loading="lazy"></span>{tag}<h3>{a["titre"]}</h3><p>{a["desc"]}</p><span class="lire">Lire le conseil →</span></a>')
     cards = "".join(carte(a) for a in ARTICLES)
     main = f'''  <section class="article alt conseils">
     <div class="wrap">
-      <p class="crumbs"><a href="../">Accueil</a> › Conseils</p>
+      <p class="crumbs"><a href="/">Accueil</a> › Conseils</p>
       <h1>Conseils de <mark>plombier</mark></h1>
       <p class="bref"><b>En bref :</b> des réponses simples aux urgences les plus courantes (fuite d'eau, WC bouché, chauffe-eau ou chaudière en panne, gel des canalisations) et aux projets de salle de bain, par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère.</p>
       <div class="searchbar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
