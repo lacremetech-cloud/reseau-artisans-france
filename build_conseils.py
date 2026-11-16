@@ -172,15 +172,34 @@ def article(a):
 
 def hub():
     url = f"{SITE}/conseils/"
-    cards = "".join(f'<a class="card post" href="{a["slug"]}/"><h3>{a["titre"]}</h3><p>{a["desc"]}</p></a>' for a in ARTICLES)
-    main = f'''  <section class="article">
+    def carte(a):
+        projet = a["service"][0] == "salle-de-bain"
+        tag = '<span class="tag-post projet">Projet</span>' if projet else '<span class="tag-post urgence">Urgence</span>'
+        return (f'<a class="card post{" projet" if projet else ""}" href="{a["slug"]}/" data-q="{a["titre"]} {a["desc"]} {a["bref"]}">'
+                f'{tag}<h3>{a["titre"]}</h3><p>{a["desc"]}</p><span class="lire">Lire le conseil →</span></a>')
+    cards = "".join(carte(a) for a in ARTICLES)
+    main = f'''  <section class="article alt conseils">
     <div class="wrap">
       <p class="crumbs"><a href="../">Accueil</a> › Conseils</p>
-      <h1>Conseils de plombier</h1>
+      <h1>Conseils de <mark>plombier</mark></h1>
       <p class="bref"><b>En bref :</b> des réponses simples aux urgences les plus courantes (fuite d'eau, WC bouché, chauffe-eau ou chaudière en panne, gel des canalisations) et aux projets de salle de bain, par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère.</p>
-      <div class="grid g2 posts">{cards}</div>
+      <div class="searchbar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="q-conseils" type="search" placeholder="Rechercher un conseil : fuite, WC, chauffe-eau, gel…" aria-label="Rechercher un conseil" autocomplete="off"></div>
+      <div class="grid g2 posts" id="posts">{cards}</div>
+      <p class="vide" id="vide" hidden>Aucun conseil ne correspond. Votre problème n'est pas dans la liste ? Appelez-nous au <a class="js-call" href="tel:{TEL}"><span class="js-num">06 23 83 20 29</span></a>, on vous conseille gratuitement.</p>
     </div>
-  </section>'''
+  </section>
+  <script>
+  (function(){{
+    var n=function(t){{return t.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");}};
+    var q=document.getElementById("q-conseils"),cs=[].slice.call(document.querySelectorAll("#posts .post")),v=document.getElementById("vide");
+    q.addEventListener("input",function(){{
+      var m=n(q.value).split(/\\s+/).filter(Boolean),k=0;
+      cs.forEach(function(c){{var t=n(c.getAttribute("data-q"));var ok=m.every(function(w){{return t.indexOf(w)>-1;}});c.hidden=!ok;if(ok)k++;}});
+      v.hidden=k>0;
+    }});
+  }})();
+  </script>'''
     ld = {"@context": "https://schema.org", "@type": "CollectionPage", "name": "Conseils de plombier", "url": url, "inLanguage": "fr-FR",
           "hasPart": [{"@type": "Article", "headline": a["titre"], "url": f"{url}{a['slug']}/"} for a in ARTICLES]}
     s = shell(base(), 1, "Conseils de plombier : fuite, WC bouché, chauffe-eau, chaudière | Réseau Artisans France",

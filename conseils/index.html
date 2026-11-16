@@ -113,8 +113,23 @@
   .article .crumbs a{color:inherit}
   .cta-box{background:var(--tint);border:1px solid var(--tint-2);border-radius:var(--radius);padding:20px 22px;margin:32px 0 0;max-width:760px}
   .cta-box .btn{margin-right:12px}
-  .posts .post{display:block;color:inherit;text-decoration:none}
-  .posts .post h3{margin-top:0}
+  .posts .post{display:block;color:inherit;text-decoration:none;border-top:5px solid var(--red);position:relative}
+  .posts .post.projet{border-top-color:var(--blue)}
+  .posts .post:hover{border-color:var(--line-strong);border-top-color:var(--red-dark);transform:translateY(-2px)}
+  .posts .post.projet:hover{border-top-color:var(--navy)}
+  .posts .post h3{margin:10px 0 6px}
+  .posts .post[hidden]{display:none}
+  .tag-post{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:999px;background:#fde8ea;color:var(--red-dark)}
+  .tag-post.projet{background:var(--tint-2);color:var(--navy-2)}
+  .lire{display:inline-block;margin-top:12px;font-weight:800;color:var(--red-dark)}
+  .post.projet .lire{color:var(--blue)}
+  .conseils h1 mark{background:linear-gradient(transparent 58%,#ffd5d9 58%);color:inherit;padding:0 4px}
+  .conseils .bref{background:#fff}
+  .searchbar{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line-strong);border-radius:999px;padding:10px 18px;margin:0 0 24px;max-width:620px;box-shadow:var(--shadow-sm);color:var(--muted)}
+  .searchbar:focus-within{border-color:var(--blue)}
+  .searchbar input{border:0;outline:0;font:inherit;font-size:16px;width:100%;background:transparent;color:var(--ink)}
+  .searchbar .ic{width:20px;height:20px;flex:none}
+  .vide{margin-top:18px}
   .grid{display:grid;gap:18px}
   @media(min-width:700px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
   .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-md);transition:box-shadow .2s ease,border-color .2s ease}
@@ -250,14 +265,28 @@
 </header>
 
 <main>
-  <section class="article">
+  <section class="article alt conseils">
     <div class="wrap">
       <p class="crumbs"><a href="../">Accueil</a> › Conseils</p>
-      <h1>Conseils de plombier</h1>
+      <h1>Conseils de <mark>plombier</mark></h1>
       <p class="bref"><b>En bref :</b> des réponses simples aux urgences les plus courantes (fuite d'eau, WC bouché, chauffe-eau ou chaudière en panne, gel des canalisations) et aux projets de salle de bain, par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère.</p>
-      <div class="grid g2 posts"><a class="card post" href="fuite-d-eau-que-faire/"><h3>Fuite d'eau : que faire en attendant le plombier ?</h3><p>Fuite sous l'évier, tuyau percé, dégât des eaux : les gestes à faire tout de suite, comment trouver l'origine et quand appeler un plombier.</p></a><a class="card post" href="wc-bouche-que-faire/"><h3>WC bouché : que faire avant d'appeler un plombier ?</h3><p>WC bouché ou qui se vide mal : les gestes simples à essayer, ce qu'il ne faut jamais faire, et quand appeler un plombier pour un débouchage.</p></a><a class="card post" href="chauffe-eau-ne-chauffe-plus/"><h3>Chauffe-eau qui ne chauffe plus : les causes et que faire</h3><p>Plus d'eau chaude ? Les vérifications simples à faire sur un chauffe-eau électrique, les pannes courantes et quand réparer ou remplacer.</p></a><a class="card post" href="chaudiere-gaz-en-panne/"><h3>Chaudière gaz en panne : les vérifications avant d'appeler</h3><p>Plus de chauffage ou d'eau chaude avec une chaudière gaz : les vérifications simples, les bons réflexes de sécurité et quand appeler un chauffagiste.</p></a><a class="card post" href="canalisations-gel-hiver/"><h3>Canalisations et gel : comment protéger vos tuyaux en hiver</h3><p>Éviter que les tuyaux gèlent ou éclatent en hiver : isolation, robinets extérieurs, maison inoccupée, et que faire si une canalisation a gelé.</p></a><a class="card post" href="remplacer-baignoire-par-douche/"><h3>Remplacer une baignoire par une douche : étapes et conseils</h3><p>Remplacer sa baignoire par une douche à l'italienne ou un receveur extra-plat : les étapes, la durée des travaux et les points à vérifier avant le devis.</p></a></div>
+      <div class="searchbar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="q-conseils" type="search" placeholder="Rechercher un conseil : fuite, WC, chauffe-eau, gel…" aria-label="Rechercher un conseil" autocomplete="off"></div>
+      <div class="grid g2 posts" id="posts"><a class="card post" href="fuite-d-eau-que-faire/" data-q="Fuite d'eau : que faire en attendant le plombier ? Fuite sous l'évier, tuyau percé, dégât des eaux : les gestes à faire tout de suite, comment trouver l'origine et quand appeler un plombier. En cas de fuite d'eau, coupez d'abord l'arrivée d'eau générale (près du compteur ou sous l'évier), coupez l'électricité si l'eau approche des prises, épongez et prenez des photos pour l'assurance. Un plombier localise ensuite l'origine de la fuite et répare. Réseau Artisans France intervient 24h/24 en Drôme, Ardèche et Isère."><span class="tag-post urgence">Urgence</span><h3>Fuite d'eau : que faire en attendant le plombier ?</h3><p>Fuite sous l'évier, tuyau percé, dégât des eaux : les gestes à faire tout de suite, comment trouver l'origine et quand appeler un plombier.</p><span class="lire">Lire le conseil →</span></a><a class="card post" href="wc-bouche-que-faire/" data-q="WC bouché : que faire avant d'appeler un plombier ? WC bouché ou qui se vide mal : les gestes simples à essayer, ce qu'il ne faut jamais faire, et quand appeler un plombier pour un débouchage. Pour un WC bouché, arrêtez de tirer la chasse, essayez une ventouse ou de l'eau chaude (pas bouillante) avec du liquide vaisselle. N'utilisez pas de produit chimique agressif. Si le WC reste bouché ou si plusieurs évacuations refoulent, un plombier débouche avec un furet ou par hydrocurage."><span class="tag-post urgence">Urgence</span><h3>WC bouché : que faire avant d'appeler un plombier ?</h3><p>WC bouché ou qui se vide mal : les gestes simples à essayer, ce qu'il ne faut jamais faire, et quand appeler un plombier pour un débouchage.</p><span class="lire">Lire le conseil →</span></a><a class="card post" href="chauffe-eau-ne-chauffe-plus/" data-q="Chauffe-eau qui ne chauffe plus : les causes et que faire Plus d'eau chaude ? Les vérifications simples à faire sur un chauffe-eau électrique, les pannes courantes et quand réparer ou remplacer. Si votre chauffe-eau électrique ne chauffe plus, vérifiez d'abord le disjoncteur et le contacteur jour/nuit au tableau électrique. Si tout est en ordre, la panne vient souvent du thermostat ou de la résistance, que l'on remplace. Un chauffe-eau qui fuit par la cuve doit en général être remplacé."><span class="tag-post urgence">Urgence</span><h3>Chauffe-eau qui ne chauffe plus : les causes et que faire</h3><p>Plus d'eau chaude ? Les vérifications simples à faire sur un chauffe-eau électrique, les pannes courantes et quand réparer ou remplacer.</p><span class="lire">Lire le conseil →</span></a><a class="card post" href="chaudiere-gaz-en-panne/" data-q="Chaudière gaz en panne : les vérifications avant d'appeler Plus de chauffage ou d'eau chaude avec une chaudière gaz : les vérifications simples, les bons réflexes de sécurité et quand appeler un chauffagiste. Si votre chaudière gaz s'arrête, vérifiez la pression d'eau sur le manomètre, l'alimentation électrique, l'arrivée de gaz et le thermostat d'ambiance, puis notez le code erreur affiché. En cas d'odeur de gaz, n'actionnez aucun interrupteur, aérez, sortez et appelez Urgence Sécurité Gaz au 0 800 47 33 33."><span class="tag-post urgence">Urgence</span><h3>Chaudière gaz en panne : les vérifications avant d'appeler</h3><p>Plus de chauffage ou d'eau chaude avec une chaudière gaz : les vérifications simples, les bons réflexes de sécurité et quand appeler un chauffagiste.</p><span class="lire">Lire le conseil →</span></a><a class="card post" href="canalisations-gel-hiver/" data-q="Canalisations et gel : comment protéger vos tuyaux en hiver Éviter que les tuyaux gèlent ou éclatent en hiver : isolation, robinets extérieurs, maison inoccupée, et que faire si une canalisation a gelé. Pour protéger vos canalisations du gel, isolez les tuyaux et le compteur exposés au froid, coupez et videz les robinets extérieurs, et gardez un chauffage minimum dans un logement inoccupé. Si un tuyau a gelé ou éclaté, coupez l'eau et ne le chauffez jamais à la flamme."><span class="tag-post urgence">Urgence</span><h3>Canalisations et gel : comment protéger vos tuyaux en hiver</h3><p>Éviter que les tuyaux gèlent ou éclatent en hiver : isolation, robinets extérieurs, maison inoccupée, et que faire si une canalisation a gelé.</p><span class="lire">Lire le conseil →</span></a><a class="card post projet" href="remplacer-baignoire-par-douche/" data-q="Remplacer une baignoire par une douche : étapes et conseils Remplacer sa baignoire par une douche à l'italienne ou un receveur extra-plat : les étapes, la durée des travaux et les points à vérifier avant le devis. Remplacer une baignoire par une douche se fait en général en quelques jours : dépose de la baignoire, reprise de l'évacuation, pose d'un receveur extra-plat ou d'une douche à l'italienne, étanchéité, faïence et paroi. Une visite sur place permet de vérifier l'évacuation et de faire un devis précis."><span class="tag-post projet">Projet</span><h3>Remplacer une baignoire par une douche : étapes et conseils</h3><p>Remplacer sa baignoire par une douche à l'italienne ou un receveur extra-plat : les étapes, la durée des travaux et les points à vérifier avant le devis.</p><span class="lire">Lire le conseil →</span></a></div>
+      <p class="vide" id="vide" hidden>Aucun conseil ne correspond. Votre problème n'est pas dans la liste ? Appelez-nous au <a class="js-call" href="tel:+33623832029"><span class="js-num">06 23 83 20 29</span></a>, on vous conseille gratuitement.</p>
     </div>
   </section>
+  <script>
+  (function(){
+    var n=function(t){return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");};
+    var q=document.getElementById("q-conseils"),cs=[].slice.call(document.querySelectorAll("#posts .post")),v=document.getElementById("vide");
+    q.addEventListener("input",function(){
+      var m=n(q.value).split(/\s+/).filter(Boolean),k=0;
+      cs.forEach(function(c){var t=n(c.getAttribute("data-q"));var ok=m.every(function(w){return t.indexOf(w)>-1;});c.hidden=!ok;if(ok)k++;});
+      v.hidden=k>0;
+    });
+  })();
+  </script>
   <!-- CTA FINAL -->
   <section class="final">
     <div class="wrap">
