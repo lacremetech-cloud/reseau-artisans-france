@@ -126,6 +126,7 @@ def page(p, lieu):
       <p class="sub">On travaille au prix juste : devis écrit avant les travaux, paiement après intervention.</p>
       {('<p><a class="btn btn-call" href="' + p["devis"] + '">Demander mon devis gratuit</a></p>') if p.get("devis") else ""}
       <p>Voir aussi : {others}. {villes}.</p>
+      <p>Nos conseils : <a href="../conseils/">les bons réflexes en cas d'urgence</a>.</p>
     </div>
   </section>
   '''
@@ -148,8 +149,10 @@ def update_home(villes):
     links_v = " · ".join(f'<a href="/{v["slug"]}/">{v["ville"]}</a>' for v in villes)
     links_p = " · ".join(f'<a href="/{q["slug"]}/">{q["nom"]}</a>' for q in PROBLEMES if not q.get("projet"))
     links_j = " · ".join(f'<a href="/{q["slug"]}/">{q["nom"]}</a>' for q in PROBLEMES if q.get("projet"))
-    s = re.sub(r'<p class="legal">Nos pages par ville :.*?</p>(\n\s*<p class="legal">Urgences :.*?</p>)?(\n\s*<p class="legal">Projets :.*?</p>)?',
-               f'<p class="legal">Nos pages par ville : {links_v}</p>\n      <p class="legal">Urgences : {links_p}</p>\n      <p class="legal">Projets : {links_j}</p>', s, count=1, flags=re.S)
+    import build_conseils
+    links_c = " · ".join(f'<a href="/conseils/{a["slug"]}/">{a["court"]}</a>' for a in build_conseils.ARTICLES)
+    s = re.sub(r'<p class="legal">Nos pages par ville :.*?</p>(\n\s*<p class="legal">Urgences :.*?</p>)?(\n\s*<p class="legal">Projets :.*?</p>)?(\n\s*<p class="legal">Conseils :.*?</p>)?',
+               f'<p class="legal">Nos pages par ville : {links_v}</p>\n      <p class="legal">Urgences : {links_p}</p>\n      <p class="legal">Projets : {links_j}</p>\n      <p class="legal">Conseils : <a href="/conseils/">tous nos conseils</a> · {links_c}</p>', s, count=1, flags=re.S)
     ld = {"@context": "https://schema.org", "@type": "Plumber", "name": "Réseau Artisans France", "url": SITE + "/", "telephone": TEL,
           "image": SITE + "/assets/raf-logo.png",
           "address": {"@type": "PostalAddress", "streetAddress": "60 rue des Bouvreuils", "postalCode": "07100", "addressLocality": "Annonay", "addressCountry": "FR"},
@@ -184,5 +187,7 @@ if __name__ == "__main__":
             d = os.path.join(HERE, slug); os.makedirs(d, exist_ok=True)
             open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(html)
             slugs.append(slug)
-    sitemap(slugs)                             # 4. sitemap
+    import build_conseils
+    slugs += build_conseils.build()            # 4. conseils (blog)
+    sitemap(slugs)                             # 5. sitemap
     print(len(slugs), "pages :", ", ".join(slugs))

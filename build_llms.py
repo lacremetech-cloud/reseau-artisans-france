@@ -33,7 +33,11 @@ def main():
     ]
     for p in build_problemes.PROBLEMES:
         lines.append(f"- [{p['nom']}]({SITE}/{p['slug']}/)")
-    lines += [f"- [Rénovation de salle de bain]({SITE}/salle-de-bain/)", f"- [Remplacement de chaudière gaz]({SITE}/chaudiere/)", "", "## Zones d'intervention", ""]
+    lines += [f"- [Rénovation de salle de bain]({SITE}/salle-de-bain/)", f"- [Remplacement de chaudière gaz]({SITE}/chaudiere/)", "", "## Conseils", ""]
+    import build_conseils
+    for a in build_conseils.ARTICLES:
+        lines.append(f"- [{a['titre']}]({SITE}/conseils/{a['slug']}/) : {a['desc']}")
+    lines += ["", "## Zones d'intervention", ""]
     for dep in ("Drôme", "Ardèche", "Isère"):
         lines.append(f"### {dep}")
         lines.append("")
