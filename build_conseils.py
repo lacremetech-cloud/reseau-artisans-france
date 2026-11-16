@@ -11,6 +11,26 @@ import seo
 SITE = "https://reseauartisansfrance.com"
 TEL = "+33623832029"
 DATE = "2026-11-16"
+# Image de tête par article : (fichier dans assets/, texte alternatif, légende, largeur, hauteur)
+# « vraie » = photo d'une intervention de l'équipe ; sinon « Photo d'illustration ».
+IMAGES = {
+ "fuite-d-eau-que-faire": ("intervention-raccord.jpg", "Remplacement d'un raccord de plomberie qui fuyait", "Intervention de l'équipe Réseau Artisans France : remplacement d'un raccord.", 800, 1000),
+ "wc-bouche-que-faire": ("conseils/canalisation-exterieure.jpg", "Tranchée le long d'une maison pour accéder à une canalisation d'évacuation", "Intervention de l'équipe Réseau Artisans France sur une canalisation extérieure.", 562, 1000),
+ "chauffe-eau-ne-chauffe-plus": ("intervention-tuyauterie.jpg", "Réparation de tuyauterie par un plombier", "Intervention de l'équipe Réseau Artisans France sur une tuyauterie.", 800, 1000),
+ "chaudiere-gaz-en-panne": ("ch-tech.jpg", "Chauffagiste contrôlant une chaudière gaz murale", "Photo d'illustration.", 1000, 1241),
+ "canalisations-gel-hiver": ("intervention-regard-compteur.jpg", "Regard de compteur d'eau ouvert pendant une intervention", "Intervention de l'équipe Réseau Artisans France sur un regard de compteur d'eau.", 800, 1000),
+ "remplacer-baignoire-par-douche": ("ba1-apres.jpg", "Douche à l'italienne avec paroi vitrée et meuble en chêne", "Image d'illustration : exemple de douche après remplacement d'une baignoire.", 900, 1116),
+}
+# Vrais avis Google (texte exact, prénom + initiale). Un par article ; ce n'est pas forcément un avis sur ce sujet précis.
+AVIS_URL = "https://share.google/ummoZs7w7M8uVlmeo"
+AVIS = {
+ "fuite-d-eau-que-faire": ("Intervention rapide pour un problème de fuite d’eau. Travail propre et efficace, avec de bons conseils. Entreprise sérieuse et ponctuelle. Je recommande sans hésiter !", "Zoulihka R."),
+ "wc-bouche-que-faire": ("Très bonne expérience ! J’avais une urgence en plomberie et l’entreprise a été très réactive. Le plombier était ponctuel, professionnel et efficace. Le problème a été résolu rapidement et le travail est propre.", "Khadija B."),
+ "chauffe-eau-ne-chauffe-plus": ("Un binôme au top, rapide, efficace et pleins de bon conseils ! Encore merci !", "Kylian P."),
+ "chaudiere-gaz-en-panne": ("Techniciens compétents et sympathiques", "Patricia B."),
+ "canalisations-gel-hiver": ("Hyper réactifs et professionnels! Au top, rien à dire c'est parfait !", "Audrey B."),
+ "remplacer-baignoire-par-douche": ("Technicien excellent irréprochable très agréable souriant je vous recommande fortement l'entreprise RÉSEAU ARTISANS FRANCE entreprise très sérieuse 👍👍👍", "Anthony M."),
+}
 ADDR = {"@type": "PostalAddress", "streetAddress": "60 rue des Bouvreuils", "postalCode": "07100", "addressLocality": "Annonay", "addressCountry": "FR"}
 
 ARTICLES = [
@@ -142,13 +162,20 @@ def article(a):
     faq = "".join(f"<details><summary>{q}</summary><p>{r}</p></details>" for q, r in a["faq"])
     autres = " · ".join(f'<a href="../{b["slug"]}/">{b["court"]}</a>' for b in ARTICLES if b is not a)
     svc, svc_nom = a["service"]
+    img = IMAGES[a["slug"]]
+    av_txt, av_nom = AVIS[a["slug"]]
+    avis = (f'<figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div>'
+            f'<blockquote>« {av_txt} »</blockquote><figcaption><b>{av_nom}</b> · Avis Google · '
+            f'<a href="{AVIS_URL}" target="_blank" rel="noopener">5,0/5 sur Google, voir tous les avis</a></figcaption></figure>')
     main = f'''  <section class="article">
     <div class="wrap">
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>{a["titre"]}</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
       <p class="bref"><b>En bref :</b> {a["bref"]}</p>
+      <figure class="post-img"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="eager"><figcaption>{img[2]}</figcaption></figure>
       {sec}
+      {avis}
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../{svc}/">{svc_nom}</a></p></div>
     </div>
@@ -165,7 +192,7 @@ def article(a):
           "author": {"@type": "Organization", "name": "Réseau Artisans France", "url": SITE + "/"},
           "publisher": {"@type": "Plumber", "name": "Réseau Artisans France", "url": SITE + "/", "telephone": TEL, "address": ADDR,
                         "logo": {"@type": "ImageObject", "url": SITE + "/assets/raf-logo.png"}},
-          "mainEntityOfPage": url}
+          "mainEntityOfPage": url, "image": f"{SITE}/assets/{IMAGES[a['slug']][0]}"}
     s = shell(base(), 2, f"{a['titre']} | Réseau Artisans France", a["desc"], url, main, ld)
     return seo.enrich(s, url, [("Conseils", SITE + "/conseils/"), (a["court"], url)])
 
@@ -176,7 +203,7 @@ def hub():
         projet = a["service"][0] == "salle-de-bain"
         tag = '<span class="tag-post projet">Projet</span>' if projet else '<span class="tag-post urgence">Urgence</span>'
         return (f'<a class="card post{" projet" if projet else ""}" href="{a["slug"]}/" data-q="{a["titre"]} {a["desc"]} {a["bref"]}">'
-                f'{tag}<h3>{a["titre"]}</h3><p>{a["desc"]}</p><span class="lire">Lire le conseil →</span></a>')
+                f'<span class="thumb"><img src="../assets/{IMAGES[a["slug"]][0]}" alt="" width="{IMAGES[a["slug"]][3]}" height="{IMAGES[a["slug"]][4]}" loading="lazy"></span>{tag}<h3>{a["titre"]}</h3><p>{a["desc"]}</p><span class="lire">Lire le conseil →</span></a>')
     cards = "".join(carte(a) for a in ARTICLES)
     main = f'''  <section class="article alt conseils">
     <div class="wrap">
