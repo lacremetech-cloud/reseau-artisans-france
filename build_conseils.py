@@ -172,8 +172,10 @@ def article(a):
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>{a["titre"]}</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
-      <p class="bref"><b>En bref :</b> {a["bref"]}</p>
-      <figure class="post-img"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="eager"><figcaption>{img[2]}</figcaption></figure>
+      <div class="intro-post">
+        <p class="bref"><b>En bref :</b> {a["bref"]}</p>
+        <figure class="post-img"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="eager"><figcaption>{img[2]}</figcaption></figure>
+      </div>
       {sec}
       {avis}
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
