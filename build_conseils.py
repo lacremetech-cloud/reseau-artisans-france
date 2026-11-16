@@ -21,6 +21,15 @@ IMAGES = {
  "canalisations-gel-hiver": ("intervention-regard-compteur.jpg", "Regard de compteur d'eau ouvert pendant une intervention", "Intervention de l'équipe Réseau Artisans France sur un regard de compteur d'eau.", 800, 1000),
  "remplacer-baignoire-par-douche": ("ba1-apres.jpg", "Douche à l'italienne avec paroi vitrée et meuble en chêne", "Image d'illustration : exemple de douche après remplacement d'une baignoire.", 900, 1116),
 }
+# Petite image dans le corps de l'article, à droite de la partie indiquée (index dans sections).
+# Absent = pas d'image dans l'article (la vignette de la page Conseils reste).
+IMG_SECTION = {
+ "fuite-d-eau-que-faire": 4,          # Fuite invisible : recherche de fuite
+ "wc-bouche-que-faire": 4,            # Quand appeler un plombier : canalisation extérieure
+ "chaudiere-gaz-en-panne": 4,         # Entretien annuel
+ "canalisations-gel-hiver": 0,        # Où le gel frappe-t-il : regard de compteur
+ "remplacer-baignoire-par-douche": 1, # Receveur extra-plat ou douche à l'italienne
+}
 # Vrais avis Google (texte exact, prénom + initiale). Un par article ; ce n'est pas forcément un avis sur ce sujet précis.
 AVIS_URL = "https://share.google/ummoZs7w7M8uVlmeo"
 AVIS = {
@@ -158,11 +167,15 @@ def shell(s, depth, title, desc, url, main, ld):
 
 def article(a):
     url = f"{SITE}/conseils/{a['slug']}/"
-    sec = "".join(f"<h2>{h}</h2>" + "".join(f"<p>{p}</p>" for p in ps) for h, ps in a["sections"])
+    img = IMAGES[a["slug"]]
+    k = IMG_SECTION.get(a["slug"])
+    fig = (f'<figure class="img-side"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="lazy">'
+           f'<figcaption>{img[2]}</figcaption></figure>')
+    sec = "".join(f'<div class="part">{fig if i == k else ""}<h2>{h}</h2>' + "".join(f"<p>{p}</p>" for p in ps) + "</div>"
+                  for i, (h, ps) in enumerate(a["sections"]))
     faq = "".join(f"<details><summary>{q}</summary><p>{r}</p></details>" for q, r in a["faq"])
     autres = " · ".join(f'<a href="../{b["slug"]}/">{b["court"]}</a>' for b in ARTICLES if b is not a)
     svc, svc_nom = a["service"]
-    img = IMAGES[a["slug"]]
     av_txt, av_nom = AVIS[a["slug"]]
     avis = (f'<figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div>'
             f'<blockquote>« {av_txt} »</blockquote><figcaption><b>{av_nom}</b> · Avis Google · '
@@ -172,10 +185,7 @@ def article(a):
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>{a["titre"]}</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
-      <div class="intro-post">
-        <p class="bref"><b>En bref :</b> {a["bref"]}</p>
-        <figure class="post-img"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="eager"><figcaption>{img[2]}</figcaption></figure>
-      </div>
+      <p class="bref"><b>En bref :</b> {a["bref"]}</p>
       {sec}
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../{svc}/">{svc_nom}</a></p></div>

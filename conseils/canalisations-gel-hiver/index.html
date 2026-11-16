@@ -122,13 +122,12 @@
   .avis-post{background:#fff;border:1px solid var(--line);border-left:5px solid var(--star);border-radius:var(--radius);padding:18px 22px;margin:32px 0 0;max-width:760px;box-shadow:var(--shadow-sm)}
   .avis-post blockquote{margin:6px 0 8px;font-size:17px;font-style:italic;color:var(--ink)}
   .avis-post figcaption{font-size:14px;color:var(--muted)}
-  .intro-post{display:grid;gap:18px;align-items:start;max-width:860px;margin:0 0 8px}
-  .intro-post .bref{margin:0}
-  @media(min-width:760px){.intro-post{grid-template-columns:1fr 260px}}
-  .post-img{margin:0}
-  .post-img img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:12px;box-shadow:var(--shadow-sm)}
-  @media(max-width:759px){.post-img img{aspect-ratio:16/9;max-height:200px}}
-  .post-img figcaption{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+  .part{max-width:760px}
+  .part::after{content:"";display:block;clear:both}
+  .img-side{float:right;width:200px;margin:6px 0 12px 22px}
+  .img-side img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-sm)}
+  .img-side figcaption{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.35}
+  @media(max-width:600px){.img-side{width:42%;margin:4px 0 8px 14px}}
   .posts .post{padding-top:0;overflow:hidden}
   .posts .post .thumb{display:block;margin:0 -24px 14px;height:170px;overflow:hidden;background:var(--tint-2)}
   .posts .post .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
@@ -285,11 +284,8 @@
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>Canalisations et gel : comment protéger vos tuyaux en hiver</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
-      <div class="intro-post">
-        <p class="bref"><b>En bref :</b> Pour protéger vos canalisations du gel, isolez les tuyaux et le compteur exposés au froid, coupez et videz les robinets extérieurs, et gardez un chauffage minimum dans un logement inoccupé. Si un tuyau a gelé ou éclaté, coupez l'eau et ne le chauffez jamais à la flamme.</p>
-        <figure class="post-img"><img src="../../assets/intervention-regard-compteur.jpg" alt="Regard de compteur d'eau ouvert pendant une intervention" width="800" height="1000" loading="eager"><figcaption>Intervention de l'équipe Réseau Artisans France sur un regard de compteur d'eau.</figcaption></figure>
-      </div>
-      <h2>Où le gel frappe-t-il ?</h2><p>Les tuyaux qui passent dans un garage, une cave, un vide sanitaire, des combles non isolés ou le long d'un mur extérieur, le compteur d'eau dans un regard extérieur, et les robinets de jardin.</p><h2>Avant l'hiver</h2><p>Isolez les tuyaux exposés avec des manchons isolants. Protégez le compteur dans son regard (plaque isolante, pas de paille humide). Coupez l'eau du robinet extérieur depuis l'intérieur, puis ouvrez-le pour le vider.</p><h2>Pendant les grands froids</h2><p>Dans une maison ou un local inoccupé, gardez un chauffage hors gel. Si vous partez longtemps, coupez l'eau générale et videz les canalisations exposées.</p><h2>Un tuyau a gelé</h2><p>Coupez l'arrivée d'eau, ouvrez le robinet concerné et réchauffez doucement le tuyau (sèche-cheveux, linges chauds). Jamais de chalumeau ni de flamme : risque d'incendie et de tuyau qui éclate.</p><h2>Un tuyau a éclaté</h2><p>Coupez l'eau générale, coupez l'électricité si l'eau approche des prises, épongez et prenez des photos pour l'assurance. Un plombier remplace le tronçon abîmé.</p>
+      <p class="bref"><b>En bref :</b> Pour protéger vos canalisations du gel, isolez les tuyaux et le compteur exposés au froid, coupez et videz les robinets extérieurs, et gardez un chauffage minimum dans un logement inoccupé. Si un tuyau a gelé ou éclaté, coupez l'eau et ne le chauffez jamais à la flamme.</p>
+      <div class="part"><figure class="img-side"><img src="../../assets/intervention-regard-compteur.jpg" alt="Regard de compteur d'eau ouvert pendant une intervention" width="800" height="1000" loading="lazy"><figcaption>Intervention de l'équipe Réseau Artisans France sur un regard de compteur d'eau.</figcaption></figure><h2>Où le gel frappe-t-il ?</h2><p>Les tuyaux qui passent dans un garage, une cave, un vide sanitaire, des combles non isolés ou le long d'un mur extérieur, le compteur d'eau dans un regard extérieur, et les robinets de jardin.</p></div><div class="part"><h2>Avant l'hiver</h2><p>Isolez les tuyaux exposés avec des manchons isolants. Protégez le compteur dans son regard (plaque isolante, pas de paille humide). Coupez l'eau du robinet extérieur depuis l'intérieur, puis ouvrez-le pour le vider.</p></div><div class="part"><h2>Pendant les grands froids</h2><p>Dans une maison ou un local inoccupé, gardez un chauffage hors gel. Si vous partez longtemps, coupez l'eau générale et videz les canalisations exposées.</p></div><div class="part"><h2>Un tuyau a gelé</h2><p>Coupez l'arrivée d'eau, ouvrez le robinet concerné et réchauffez doucement le tuyau (sèche-cheveux, linges chauds). Jamais de chalumeau ni de flamme : risque d'incendie et de tuyau qui éclate.</p></div><div class="part"><h2>Un tuyau a éclaté</h2><p>Coupez l'eau générale, coupez l'électricité si l'eau approche des prises, épongez et prenez des photos pour l'assurance. Un plombier remplace le tronçon abîmé.</p></div>
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:+33623832029"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../fuite-d-eau/">Canalisation éclatée : intervention 24h/24</a></p></div>
       <figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div><blockquote>« Hyper réactifs et professionnels! Au top, rien à dire c'est parfait ! »</blockquote><figcaption><b>Audrey B.</b> · Avis Google · <a href="https://share.google/ummoZs7w7M8uVlmeo" target="_blank" rel="noopener">5,0/5 sur Google, voir tous les avis</a></figcaption></figure>

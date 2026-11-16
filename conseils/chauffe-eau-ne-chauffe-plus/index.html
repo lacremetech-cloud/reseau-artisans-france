@@ -122,13 +122,12 @@
   .avis-post{background:#fff;border:1px solid var(--line);border-left:5px solid var(--star);border-radius:var(--radius);padding:18px 22px;margin:32px 0 0;max-width:760px;box-shadow:var(--shadow-sm)}
   .avis-post blockquote{margin:6px 0 8px;font-size:17px;font-style:italic;color:var(--ink)}
   .avis-post figcaption{font-size:14px;color:var(--muted)}
-  .intro-post{display:grid;gap:18px;align-items:start;max-width:860px;margin:0 0 8px}
-  .intro-post .bref{margin:0}
-  @media(min-width:760px){.intro-post{grid-template-columns:1fr 260px}}
-  .post-img{margin:0}
-  .post-img img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:12px;box-shadow:var(--shadow-sm)}
-  @media(max-width:759px){.post-img img{aspect-ratio:16/9;max-height:200px}}
-  .post-img figcaption{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+  .part{max-width:760px}
+  .part::after{content:"";display:block;clear:both}
+  .img-side{float:right;width:200px;margin:6px 0 12px 22px}
+  .img-side img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-sm)}
+  .img-side figcaption{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.35}
+  @media(max-width:600px){.img-side{width:42%;margin:4px 0 8px 14px}}
   .posts .post{padding-top:0;overflow:hidden}
   .posts .post .thumb{display:block;margin:0 -24px 14px;height:170px;overflow:hidden;background:var(--tint-2)}
   .posts .post .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
@@ -285,11 +284,8 @@
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>Chauffe-eau qui ne chauffe plus : les causes et que faire</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
-      <div class="intro-post">
-        <p class="bref"><b>En bref :</b> Si votre chauffe-eau électrique ne chauffe plus, vérifiez d'abord le disjoncteur et le contacteur jour/nuit au tableau électrique. Si tout est en ordre, la panne vient souvent du thermostat ou de la résistance, que l'on remplace. Un chauffe-eau qui fuit par la cuve doit en général être remplacé.</p>
-        <figure class="post-img"><img src="../../assets/intervention-tuyauterie.jpg" alt="Réparation de tuyauterie par un plombier" width="800" height="1000" loading="eager"><figcaption>Intervention de l'équipe Réseau Artisans France sur une tuyauterie.</figcaption></figure>
-      </div>
-      <h2>1. Vérifiez le tableau électrique</h2><p>Le disjoncteur du chauffe-eau a peut-être sauté. Vérifiez aussi le contacteur jour/nuit : s'il est sur « arrêt » ou en mode heures creuses alors que vous n'en avez pas, le ballon ne chauffe pas.</p><h2>2. Laissez-lui le temps</h2><p>Après une coupure ou un gros puisage d'eau chaude, un ballon peut mettre plusieurs heures à remonter en température, surtout s'il ne chauffe qu'en heures creuses.</p><h2>Les pannes les plus courantes</h2><p>Thermostat défaillant, résistance hors service (souvent entartrée), sécurité qui s'est déclenchée : ces pièces se remplacent. Dans les zones où l'eau est calcaire, le tartre use plus vite la résistance.</p><h2>Le chauffe-eau fuit</h2><p>Une fuite au groupe de sécurité (le robinet sous le ballon) est normale goutte à goutte pendant la chauffe, mais pas en continu. Une fuite par la cuve elle-même signifie en général que le ballon est percé : il faut le remplacer. Coupez l'électricité et l'arrivée d'eau froide du ballon.</p><h2>Réparer ou remplacer ?</h2><p>Tout dépend de l'âge du chauffe-eau, de la panne et du prix des pièces. Après diagnostic, un plombier vous dit franchement ce qui est le plus raisonnable, avec un devis écrit.</p>
+      <p class="bref"><b>En bref :</b> Si votre chauffe-eau électrique ne chauffe plus, vérifiez d'abord le disjoncteur et le contacteur jour/nuit au tableau électrique. Si tout est en ordre, la panne vient souvent du thermostat ou de la résistance, que l'on remplace. Un chauffe-eau qui fuit par la cuve doit en général être remplacé.</p>
+      <div class="part"><h2>1. Vérifiez le tableau électrique</h2><p>Le disjoncteur du chauffe-eau a peut-être sauté. Vérifiez aussi le contacteur jour/nuit : s'il est sur « arrêt » ou en mode heures creuses alors que vous n'en avez pas, le ballon ne chauffe pas.</p></div><div class="part"><h2>2. Laissez-lui le temps</h2><p>Après une coupure ou un gros puisage d'eau chaude, un ballon peut mettre plusieurs heures à remonter en température, surtout s'il ne chauffe qu'en heures creuses.</p></div><div class="part"><h2>Les pannes les plus courantes</h2><p>Thermostat défaillant, résistance hors service (souvent entartrée), sécurité qui s'est déclenchée : ces pièces se remplacent. Dans les zones où l'eau est calcaire, le tartre use plus vite la résistance.</p></div><div class="part"><h2>Le chauffe-eau fuit</h2><p>Une fuite au groupe de sécurité (le robinet sous le ballon) est normale goutte à goutte pendant la chauffe, mais pas en continu. Une fuite par la cuve elle-même signifie en général que le ballon est percé : il faut le remplacer. Coupez l'électricité et l'arrivée d'eau froide du ballon.</p></div><div class="part"><h2>Réparer ou remplacer ?</h2><p>Tout dépend de l'âge du chauffe-eau, de la panne et du prix des pièces. Après diagnostic, un plombier vous dit franchement ce qui est le plus raisonnable, avec un devis écrit.</p></div>
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:+33623832029"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../chauffe-eau-en-panne/">Chauffe-eau en panne : dépannage</a></p></div>
       <figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div><blockquote>« Un binôme au top, rapide, efficace et pleins de bon conseils ! Encore merci ! »</blockquote><figcaption><b>Kylian P.</b> · Avis Google · <a href="https://share.google/ummoZs7w7M8uVlmeo" target="_blank" rel="noopener">5,0/5 sur Google, voir tous les avis</a></figcaption></figure>

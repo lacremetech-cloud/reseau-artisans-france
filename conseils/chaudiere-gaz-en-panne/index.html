@@ -122,13 +122,12 @@
   .avis-post{background:#fff;border:1px solid var(--line);border-left:5px solid var(--star);border-radius:var(--radius);padding:18px 22px;margin:32px 0 0;max-width:760px;box-shadow:var(--shadow-sm)}
   .avis-post blockquote{margin:6px 0 8px;font-size:17px;font-style:italic;color:var(--ink)}
   .avis-post figcaption{font-size:14px;color:var(--muted)}
-  .intro-post{display:grid;gap:18px;align-items:start;max-width:860px;margin:0 0 8px}
-  .intro-post .bref{margin:0}
-  @media(min-width:760px){.intro-post{grid-template-columns:1fr 260px}}
-  .post-img{margin:0}
-  .post-img img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:12px;box-shadow:var(--shadow-sm)}
-  @media(max-width:759px){.post-img img{aspect-ratio:16/9;max-height:200px}}
-  .post-img figcaption{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+  .part{max-width:760px}
+  .part::after{content:"";display:block;clear:both}
+  .img-side{float:right;width:200px;margin:6px 0 12px 22px}
+  .img-side img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-sm)}
+  .img-side figcaption{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.35}
+  @media(max-width:600px){.img-side{width:42%;margin:4px 0 8px 14px}}
   .posts .post{padding-top:0;overflow:hidden}
   .posts .post .thumb{display:block;margin:0 -24px 14px;height:170px;overflow:hidden;background:var(--tint-2)}
   .posts .post .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
@@ -285,11 +284,8 @@
       <p class="crumbs"><a href="../../">Accueil</a> › <a href="../">Conseils</a></p>
       <h1>Chaudière gaz en panne : les vérifications avant d'appeler</h1>
       <p class="meta">Par Réseau Artisans France, plombiers chauffagistes en Drôme, Ardèche et Isère · mis à jour le 16 novembre 2026</p>
-      <div class="intro-post">
-        <p class="bref"><b>En bref :</b> Si votre chaudière gaz s'arrête, vérifiez la pression d'eau sur le manomètre, l'alimentation électrique, l'arrivée de gaz et le thermostat d'ambiance, puis notez le code erreur affiché. En cas d'odeur de gaz, n'actionnez aucun interrupteur, aérez, sortez et appelez Urgence Sécurité Gaz au 0 800 47 33 33.</p>
-        <figure class="post-img"><img src="../../assets/ch-tech.jpg" alt="Chauffagiste contrôlant une chaudière gaz murale" width="1000" height="1241" loading="eager"><figcaption>Photo d'illustration.</figcaption></figure>
-      </div>
-      <h2>Odeur de gaz : la sécurité d'abord</h2><p>N'allumez et n'éteignez aucun appareil électrique, ne faites pas de flamme, ouvrez les fenêtres, fermez le robinet de gaz si vous le pouvez, sortez du logement et appelez Urgence Sécurité Gaz (GRDF) au 0 800 47 33 33, joignable 24h/24.</p><h2>1. Regardez la pression</h2><p>Le manomètre de la chaudière indique la pression d'eau du circuit de chauffage. Si elle est trop basse, la chaudière se met en sécurité. La notice de votre chaudière indique la plage normale et comment la remettre à niveau.</p><h2>2. Électricité, gaz et thermostat</h2><p>Vérifiez que la chaudière est bien alimentée (voyants allumés, disjoncteur), que le robinet de gaz est ouvert et que le thermostat d'ambiance demande bien du chauffage (piles, programmation).</p><h2>3. Notez le code erreur</h2><p>La plupart des chaudières affichent un code en cas de panne. Notez-le avec la marque et le modèle de la chaudière : le chauffagiste saura mieux quoi apporter. Un seul redémarrage selon la notice est possible ; si la panne revient, n'insistez pas.</p><h2>Entretien annuel</h2><p>L'entretien d'une chaudière gaz est obligatoire chaque année. Il limite les pannes, maintient le bon rendement et contrôle la sécurité de l'appareil.</p>
+      <p class="bref"><b>En bref :</b> Si votre chaudière gaz s'arrête, vérifiez la pression d'eau sur le manomètre, l'alimentation électrique, l'arrivée de gaz et le thermostat d'ambiance, puis notez le code erreur affiché. En cas d'odeur de gaz, n'actionnez aucun interrupteur, aérez, sortez et appelez Urgence Sécurité Gaz au 0 800 47 33 33.</p>
+      <div class="part"><h2>Odeur de gaz : la sécurité d'abord</h2><p>N'allumez et n'éteignez aucun appareil électrique, ne faites pas de flamme, ouvrez les fenêtres, fermez le robinet de gaz si vous le pouvez, sortez du logement et appelez Urgence Sécurité Gaz (GRDF) au 0 800 47 33 33, joignable 24h/24.</p></div><div class="part"><h2>1. Regardez la pression</h2><p>Le manomètre de la chaudière indique la pression d'eau du circuit de chauffage. Si elle est trop basse, la chaudière se met en sécurité. La notice de votre chaudière indique la plage normale et comment la remettre à niveau.</p></div><div class="part"><h2>2. Électricité, gaz et thermostat</h2><p>Vérifiez que la chaudière est bien alimentée (voyants allumés, disjoncteur), que le robinet de gaz est ouvert et que le thermostat d'ambiance demande bien du chauffage (piles, programmation).</p></div><div class="part"><h2>3. Notez le code erreur</h2><p>La plupart des chaudières affichent un code en cas de panne. Notez-le avec la marque et le modèle de la chaudière : le chauffagiste saura mieux quoi apporter. Un seul redémarrage selon la notice est possible ; si la panne revient, n'insistez pas.</p></div><div class="part"><figure class="img-side"><img src="../../assets/ch-tech.jpg" alt="Chauffagiste contrôlant une chaudière gaz murale" width="1000" height="1241" loading="lazy"><figcaption>Photo d'illustration.</figcaption></figure><h2>Entretien annuel</h2><p>L'entretien d'une chaudière gaz est obligatoire chaque année. Il limite les pannes, maintient le bon rendement et contrôle la sécurité de l'appareil.</p></div>
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:+33623832029"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../depannage-chaudiere/">Dépannage de chaudière gaz</a></p></div>
       <figure class="avis-post"><div class="stars" aria-label="5 étoiles sur 5">★★★★★</div><blockquote>« Techniciens compétents et sympathiques »</blockquote><figcaption><b>Patricia B.</b> · Avis Google · <a href="https://share.google/ummoZs7w7M8uVlmeo" target="_blank" rel="noopener">5,0/5 sur Google, voir tous les avis</a></figcaption></figure>
