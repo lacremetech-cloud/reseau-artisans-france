@@ -177,9 +177,9 @@ def article(a):
         <figure class="post-img"><img src="../../assets/{img[0]}" alt="{img[1]}" width="{img[3]}" height="{img[4]}" loading="eager"><figcaption>{img[2]}</figcaption></figure>
       </div>
       {sec}
-      {avis}
       <div class="cta-box"><p><b>Besoin d'un plombier maintenant ?</b> Réseau Artisans France intervient 24h/24 et 7j/7, au prix juste : devis écrit avant les travaux, paiement après l'intervention.</p>
         <p><a class="btn btn-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg><span class="js-num">06 23 83 20 29</span></a> <a href="../../{svc}/">{svc_nom}</a></p></div>
+      {avis}
     </div>
   </section>
   <section id="faq">
