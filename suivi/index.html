@@ -281,7 +281,7 @@ function calcHtml(l){
   const m=n(l.montant),fr=n(l.frais_gasoil)+n(l.frais_materiel)+n(l.frais_autres),base=m-fr;
   return `<div><span>Montant facturé</span><b>${eur(m)}</b></div><div><span>− Frais engagés</span><b>${eur(fr)}</b></div>
    <div style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span><b>Reste après frais</b></span><b>${eur(base)}</b></div>
-   <div><span>dont commission agence 25 %</span><b>${eur(base*RATE)}</b></div>`}
+   <div class="note" style="margin-top:4px">La commission agence (25 %) se calcule sur le total de la période, après déduction de la publicité.</div>`}
 function drawLead(){
   const l=S.cur,sh=$('#sheet');
   const frais=(+l.frais_gasoil||0)+(+l.frais_materiel||0)+(+l.frais_autres||0);
@@ -446,9 +446,9 @@ async function drawDash(){
   $('#dash').innerHTML='<div class="empty">Chargement…</div>';
   const [from,to]=range(S.period);const j=await call('dashboard',{from,to});
   const done=j.done.map(x=>({...x,frais:(+x.frais_gasoil||0)+(+x.frais_materiel||0)+(+x.frais_autres||0),montant:+x.montant||0}));
-  const CA=done.reduce((a,x)=>a+x.montant,0),FR=done.reduce((a,x)=>a+x.frais,0),BASE=CA-FR,COM=BASE*RATE;
+  const CA=done.reduce((a,x)=>a+x.montant,0),FR=done.reduce((a,x)=>a+x.frais,0);
   const pubBy={meta:0,google_ads:0,lsa:0};let est=false;j.spend.forEach(s=>{pubBy[s.platform]=(pubBy[s.platform]||0)+s.amount;if(s.est)est=true});
-  const PUB=pubBy.meta+pubBy.google_ads+pubBy.lsa,RESTE=CA-FR-COM-PUB;
+  const PUB=pubBy.meta+pubBy.google_ads+pubBy.lsa,BASE=CA-FR-PUB,COM=Math.max(0,BASE)*RATE,RESTE=BASE-COM;
   const nLeads=j.leads.filter(x=>!['faux'].includes(x.statut)).reduce((a,x)=>a+x.n,0);
   const nFaux=j.leads.filter(x=>x.statut==='faux').reduce((a,x)=>a+x.n,0);
   const manquants=done.filter(x=>!x.montant).length,avis=done.filter(x=>x.avis_demande).length;
@@ -463,11 +463,11 @@ async function drawDash(){
      <div class="kpi"><div class="l">Interventions facturées</div><div class="v">${done.length}</div><div class="s">${nLeads?Math.round(done.length/nLeads*100)+' % des clients':'&nbsp;'}</div></div>
      <div class="kpi"><div class="l">Chiffre d'affaires</div><div class="v">${eur0(CA)}</div><div class="s">${done.length?'panier moyen '+eur0(CA/done.length):'&nbsp;'}</div></div>
      <div class="kpi"><div class="l">Frais connus</div><div class="v">${eur0(FR)}</div><div class="s">gasoil, matériel, autres</div></div>
-     <div class="kpi"><div class="l">Base de calcul</div><div class="v">${eur0(BASE)}</div><div class="s">CA − frais</div></div>
-     <div class="kpi"><div class="l">Commission agence 25 %</div><div class="v">${eur(COM)}</div><div class="s">sur la base de calcul</div></div>
      <div class="kpi"><div class="l">Publicité</div><div class="v">${eur0(PUB)}</div><div class="s">Meta ${eur0(pubBy.meta)} · G.Ads ${eur0(pubBy.google_ads)} · LSA ${eur0(pubBy.lsa)}${est?' (LSA estimé)':''}</div></div>
      <div class="kpi"><div class="l">Avis demandés</div><div class="v">${avis}/${done.length}</div><div class="s">sur les interventions</div></div>
-     <div class="kpi hl" style="grid-column:1/-1"><div class="l">Reste pour RAF</div><div class="v">${eur(RESTE)}</div><div class="s">CA − frais − commission − publicité · ${CA?(PUB?'1 € de pub = '+(CA/PUB).toFixed(1).replace('.',',')+' € de CA':''):''}</div></div>
+     <div class="kpi"><div class="l">Base de calcul</div><div class="v">${eur0(BASE)}</div><div class="s">CA − frais − publicité</div></div>
+     <div class="kpi"><div class="l">Commission agence 25 %</div><div class="v">${eur(COM)}</div><div class="s">sur la base de calcul</div></div>
+     <div class="kpi hl" style="grid-column:1/-1"><div class="l">Reste pour RAF</div><div class="v">${eur(RESTE)}</div><div class="s">CA − frais − publicité − commission · ${CA?(PUB?'1 € de pub = '+(CA/PUB).toFixed(1).replace('.',',')+' € de CA':''):''}</div></div>
    </div>
    ${manquants?`<div class="card" style="background:var(--warn-bg);color:var(--warn);font-weight:600;margin-top:10px">⚠️ ${manquants} intervention(s) facturée(s) sans montant : les chiffres sont incomplets.</div>`:''}
 
@@ -477,10 +477,10 @@ async function drawDash(){
    </tbody></table><div class="note">Coût / client = pub de la plateforme ÷ clients entrants de cette source. « À préciser » : source pas encore renseignée.</div></div>
 
    <h3>Interventions facturées</h3>
-   <div class="card scroll"><table class="tbl"><thead><tr><th>Date</th><th>Client</th><th class="n">CA</th><th class="n">Frais</th><th class="n">Base</th><th class="n">Comm.</th></tr></thead><tbody>
-   ${done.map(x=>`<tr data-id="${x.id}" style="cursor:pointer"><td>${new Date(x.termine_at||x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</td><td>${esc(x.ville||x.nom||'—')}<br><span class="src ${x.source}" style="font-size:11px">${SRC[x.source]}</span></td><td class="n">${x.montant?eur0(x.montant):'⚠️'}</td><td class="n">${eur0(x.frais)}</td><td class="n">${eur0(x.montant-x.frais)}</td><td class="n">${eur(Math.max(0,(x.montant-x.frais))*RATE)}</td></tr>`).join('')}
-   <tr class="tot"><td colspan="2">Total</td><td class="n">${eur0(CA)}</td><td class="n">${eur0(FR)}</td><td class="n">${eur0(BASE)}</td><td class="n">${eur(COM)}</td></tr>
-   </tbody></table></div>
+   <div class="card scroll"><table class="tbl"><thead><tr><th>Date</th><th>Client</th><th class="n">CA</th><th class="n">Frais</th><th class="n">Après frais</th></tr></thead><tbody>
+   ${done.map(x=>`<tr data-id="${x.id}" style="cursor:pointer"><td>${new Date(x.termine_at||x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</td><td>${esc(x.ville||x.nom||'—')}<br><span class="src ${x.source}" style="font-size:11px">${SRC[x.source]}</span></td><td class="n">${x.montant?eur0(x.montant):'⚠️'}</td><td class="n">${eur0(x.frais)}</td><td class="n">${eur0(x.montant-x.frais)}</td></tr>`).join('')}
+   <tr class="tot"><td colspan="2">Total</td><td class="n">${eur0(CA)}</td><td class="n">${eur0(FR)}</td><td class="n">${eur0(CA-FR)}</td></tr>
+   </tbody></table><div class="note">La commission se calcule sur la période, après déduction de la publicité : (CA − frais − pub) × 25 %.</div></div>
 
    <h3>Publicité par jour</h3>
    <div class="card scroll"><table class="tbl"><thead><tr><th>Jour</th><th class="n">Meta</th><th class="n">G. Ads</th><th class="n">LSA</th><th class="n">Total</th></tr></thead><tbody>
