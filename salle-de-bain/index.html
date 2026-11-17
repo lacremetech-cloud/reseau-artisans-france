@@ -31,9 +31,10 @@
 <section class="hero"><div class="wrap hero-grid">
   <div>
     <span class="eyebrow">Valence · Drôme · Ardèche · Grenoble</span>
-    <h1>Il est temps de refaire <em>votre salle de bain.</em></h1>
+    <h1>Il est temps de refaire <em>votre salle de bain<span class="js-ville-wrap"></span>.</em></h1>
     <p class="tagline">Un seul artisan local, de A à Z.</p>
     <p class="lead">Baignoire remplacée par une douche, salle de bain complète, WC : <b>on s'occupe de tout</b>, plomberie, carrelage et finitions.</p>
+    <div class="wa-box"><a class="btn btn-wa js-wa" data-wa="33625773592" href="https://wa.me/33625773592" target="_blank" rel="noopener">📸 Envoyer mes photos sur WhatsApp</a><p>2 ou 3 photos de votre salle de bain suffisent : on vous fait une proposition, au prix juste.</p></div>
     <ul class="ticks"><li><svg class="ic"><use href="#i-check"/></svg><span>Prix juste : devis gratuit, détaillé, sans surprise</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Intervention professionnelle, un seul artisan de A à Z</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Délais respectés : la date est fixée avec vous</span></li><li><svg class="ic"><use href="#i-check"/></svg><span>Entreprise locale, plus de 10 ans d'expérience</span></li></ul>
     <div class="cmp" style="--pos:50%"><img src="../assets/ba3-apres.jpg" alt="La même salle de bain refaite avec une douche à l'italienne et un meuble vasque" width="900" height="1116"><div class="cmp-b"><img src="../assets/ba3-avant.jpg" alt="Salle de bain des années 80 avec baignoire carrelée et lavabo colonne" width="900" height="1116"></div><span class="lab av">AVANT</span><span class="lab ap">APRÈS</span><span class="cmp-h" aria-hidden="true"></span><input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après"></div>
     <p class="illus">Faites glisser pour comparer · Images d'illustration : exemples de transformation.</p>
@@ -58,6 +59,7 @@
       <p class="legal-mini">Vos coordonnées servent à vous rappeler pour ce projet. <a href="../confidentialite.html">Confidentialité</a></p>
       <div class="or">ou</div>
       <a class="btn alt-call js-call" href="tel:+33623832029"><svg class="ic"><use href="#i-phone"/></svg>Appeler le <span class="js-num">06 23 83 20 29</span></a>
+      <a class="btn btn-wa alt-wa js-wa" data-wa="33625773592" href="https://wa.me/33625773592" target="_blank" rel="noopener">📸 Envoyer mes photos sur WhatsApp</a>
     </div>
     <div class="thanks" aria-live="polite">
       <div class="big">✅</div>
@@ -123,12 +125,21 @@
   <a href="/conseils/">Conseils de plombier</a> · <a href="../mentions-legales.html">Mentions légales</a> · <a href="../confidentialite.html">Confidentialité</a> · <a href="#" class="js-cookies" hidden>Gérer les cookies</a> · © 2026 Réseau Artisans France
 </div></footer>
 
-<div class="stickycta">
-  <a class="btn btn-call" href="#devis">Mon devis gratuit</a>
+<div class="stickycta has-wa">
+  <a class="btn btn-wa js-wa" data-wa="33625773592" href="https://wa.me/33625773592" target="_blank" rel="noopener">📸 Mes photos</a><a class="btn btn-call" href="#devis">Devis gratuit</a>
   <a class="btn btn-navy js-call" href="tel:+33623832029" aria-label="Appeler"><svg class="ic"><use href="#i-phone"/></svg></a>
 </div>
 <script src="../assets/devis.js" defer></script>
 <script>document.querySelectorAll(".cmp input").forEach(function(r){r.addEventListener("input",function(){r.parentNode.style.setProperty("--pos",r.value+"%");});});</script>
-<script src="../assets/suivi-appels.js" defer></script>
+<script>(function(){
+  var V={valence:"Valence",romans:"Romans-sur-Isère","romans-sur-isere":"Romans-sur-Isère",grenoble:"Grenoble"};
+  var q=new URLSearchParams(location.search), k=(q.get("ville")||"").toLowerCase().trim(), v=V[k]||"";
+  var msg="Bonjour, je souhaite un devis pour ma salle de bain"+(v?" à "+v:"")+". Voici 2-3 photos :";
+  document.querySelectorAll(".js-wa").forEach(function(a){a.href="https://wa.me/"+a.dataset.wa+"?text="+encodeURIComponent(msg);});
+  if(!v) return;
+  document.querySelectorAll(".js-ville-wrap").forEach(function(e){e.textContent=" à "+v;});
+  var eb=document.querySelector(".hero .eyebrow"); if(eb) eb.textContent="📍 "+v+" et alentours";
+  var c=document.getElementById("ville"); if(c&&!c.value) c.value=v;
+})();</script><script src="../assets/suivi-appels.js" defer></script>
 </body>
 </html>

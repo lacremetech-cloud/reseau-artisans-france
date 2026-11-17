@@ -5,6 +5,17 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import seo
 
 TEL, TELH = "+33623832029", "06 23 83 20 29"
+WA = "33625773592"  # WhatsApp qui reçoit les photos (salle de bain, pubs Meta)
+VILLE_JS = """<script>(function(){
+  var V={valence:"Valence",romans:"Romans-sur-Isère","romans-sur-isere":"Romans-sur-Isère",grenoble:"Grenoble"};
+  var q=new URLSearchParams(location.search), k=(q.get("ville")||"").toLowerCase().trim(), v=V[k]||"";
+  var msg="Bonjour, je souhaite un devis pour ma salle de bain"+(v?" à "+v:"")+". Voici 2-3 photos :";
+  document.querySelectorAll(".js-wa").forEach(function(a){a.href="https://wa.me/"+a.dataset.wa+"?text="+encodeURIComponent(msg);});
+  if(!v) return;
+  document.querySelectorAll(".js-ville-wrap").forEach(function(e){e.textContent=" à "+v;});
+  var eb=document.querySelector(".hero .eyebrow"); if(eb) eb.textContent="📍 "+v+" et alentours";
+  var c=document.getElementById("ville"); if(c&&!c.value) c.value=v;
+})();</script>"""
 ICONS = """<svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
@@ -49,6 +60,13 @@ def page(p):
     trust = "".join(f'<div class="trust-item"><span class="t-ic" aria-hidden="true">{i}</span><div><b>{t}</b><p>{d}</p></div></div>' for i, t, d in TRUST)
     gallery = "".join(slider(b, a, ab, aa) for b, a, ab, aa in p.get("gallery", []))
     zones = "".join(f'<span class="chip">{z}</span>' for z in ZONES)
+    wa = p.get("wa")
+    wa_href = f"https://wa.me/{WA}"
+    wa_box = (f'<div class="wa-box"><a class="btn btn-wa js-wa" data-wa="{WA}" href="{wa_href}" target="_blank" rel="noopener">📸 Envoyer mes photos sur WhatsApp</a>'
+              f'<p>2 ou 3 photos de votre salle de bain suffisent : on vous fait une proposition, au prix juste.</p></div>') if wa else ''
+    wa_alt = f'<a class="btn btn-wa alt-wa js-wa" data-wa="{WA}" href="{wa_href}" target="_blank" rel="noopener">📸 Envoyer mes photos sur WhatsApp</a>' if wa else ''
+    wa_sticky = f'<a class="btn btn-wa js-wa" data-wa="{WA}" href="{wa_href}" target="_blank" rel="noopener">📸 Mes photos</a>' if wa else ''
+    ville_js = VILLE_JS if wa else ''
     return f"""<!doctype html>
 <html lang="fr">
 <head>
@@ -80,6 +98,7 @@ def page(p):
     <h1>{p['h1']}</h1>
     {('<p class="tagline">' + p['tagline'] + '</p>') if p.get('tagline') else ''}
     <p class="lead">{p['lead']}</p>
+    {wa_box}
     <ul class="ticks">{ticks}</ul>
     {slider(p['before'], p['after'], p['before_alt'], p['after_alt'], eager=True)}
     <p class="illus">Faites glisser pour comparer · {p['illus']}</p>
@@ -104,6 +123,7 @@ def page(p):
       <p class="legal-mini">Vos coordonnées servent à vous rappeler pour ce projet. <a href="../confidentialite.html">Confidentialité</a></p>
       <div class="or">ou</div>
       <a class="btn alt-call js-call" href="tel:{TEL}"><svg class="ic"><use href="#i-phone"/></svg>Appeler le <span class="js-num">{TELH}</span></a>
+      {wa_alt}
     </div>
     <div class="thanks" aria-live="polite">
       <div class="big">✅</div>
@@ -169,13 +189,13 @@ def page(p):
   <a href="/conseils/">Conseils de plombier</a> · <a href="../mentions-legales.html">Mentions légales</a> · <a href="../confidentialite.html">Confidentialité</a> · <a href="#" class="js-cookies" hidden>Gérer les cookies</a> · © 2026 Réseau Artisans France
 </div></footer>
 
-<div class="stickycta">
-  <a class="btn btn-call" href="#devis">{p['sticky']}</a>
+<div class="stickycta{' has-wa' if wa else ''}">
+  {wa_sticky}<a class="btn btn-call" href="#devis">{'Devis gratuit' if wa else p['sticky']}</a>
   <a class="btn btn-navy js-call" href="tel:{TEL}" aria-label="Appeler"><svg class="ic"><use href="#i-phone"/></svg></a>
 </div>
 <script src="../assets/devis.js" defer></script>
 <script>document.querySelectorAll(".cmp input").forEach(function(r){{r.addEventListener("input",function(){{r.parentNode.style.setProperty("--pos",r.value+"%");}});}});</script>
-<script src="../assets/suivi-appels.js" defer></script>
+{ville_js}<script src="../assets/suivi-appels.js" defer></script>
 </body>
 </html>
 """
@@ -186,7 +206,8 @@ SDB = dict(
  title="Rénovation de salle de bain – Drôme, Ardèche, Grenoble | Réseau Artisans France",
  desc="Rénovation complète de salle de bain et WC, remplacement de baignoire par une douche. Un seul artisan du début à la fin. Visite et devis gratuits à domicile.",
  eyebrow="Valence · Drôme · Ardèche · Grenoble",
- h1="Il est temps de refaire <em>votre salle de bain.</em>",
+ h1="Il est temps de refaire <em>votre salle de bain<span class=\"js-ville-wrap\"></span>.</em>",
+ wa=True,
  tagline="Un seul artisan local, de A à Z.",
  lead="Baignoire remplacée par une douche, salle de bain complète, WC : <b>on s'occupe de tout</b>, plomberie, carrelage et finitions.",
  ticks=["Prix juste : devis gratuit, détaillé, sans surprise", "Intervention professionnelle, un seul artisan de A à Z", "Délais respectés : la date est fixée avec vous", "Entreprise locale, plus de 10 ans d\'expérience"],
