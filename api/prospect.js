@@ -45,7 +45,7 @@ const CIBLE = {
 };
 function contenu(p, step) {
   const c = CIBLE[p.segment] || CIBLE.syndic;
-  const ville = p.ville ? p.ville.charAt(0) + p.ville.slice(1).toLowerCase().replace(/(^|[\s-])(\w)/g, (m) => m.toUpperCase()) : '';
+  const ville = p.ville ? p.ville.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (m) => m.toUpperCase()).replace(/-(Sur|Les|Lès|De|Du|La|Le|En)-/g, (m) => m.toLowerCase()) : '';
   const aVille = ville ? ` à ${ville}` : '';
   const lien = `${BASE}/api/prospect?a=c&id=${p.id}`;
   let sujet, paras;
@@ -76,7 +76,7 @@ function contenu(p, step) {
     ];
   }
   const stop = `${BASE}/api/prospect?a=stop&id=${p.id}`;
-  const signature = `${SIGNATAIRE}\nRéseau Artisans France · plomberie, chauffage\n${TEL} · ${BASE}`;
+  const signature = `${SIGNATAIRE}\nPlomberie · chauffage · dépannage 24h/24\n${TEL} · reseauartisansfrance.com`;
   const pied = `Vous ne souhaitez plus recevoir nos messages ? ${stop}`;
   const text = paras.join('\n\n') + '\n\n' + signature + '\n\n' + pied;
   const html =
