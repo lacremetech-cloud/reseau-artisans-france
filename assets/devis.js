@@ -27,6 +27,11 @@
     var body = new URLSearchParams();
     body.set("page", form.dataset.page);
     ["nom","tel","ville","projet","delai","message"].forEach(function(k){ body.set(k, (fd.get(k)||"").toString().trim()); });
+    /* Formulaire pros : société et e-mail ajoutés en tête du message (le scénario Make ne lit que les champs ci-dessus). */
+    var extra = [];
+    if ((fd.get("societe")||"").trim()) extra.push("Société : " + fd.get("societe").trim());
+    if ((fd.get("email")||"").trim()) extra.push("E-mail : " + fd.get("email").trim());
+    if (extra.length) body.set("message", extra.join(" · ") + (body.get("message") ? "\n" + body.get("message") : ""));
     body.set("source", source());
     var eventId = "lead-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
     try{
