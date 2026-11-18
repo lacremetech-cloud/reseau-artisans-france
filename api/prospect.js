@@ -17,6 +17,7 @@ const BASE = 'https://reseauartisansfrance.com';
 const TEL = '06 23 83 20 29';
 const SIGNATAIRE = process.env.PROSPECT_SIGNATAIRE || "L'équipe Réseau Artisans France";
 const DELAIS = { 1: 4, 2: 5 }; // jours avant la relance suivante
+const PLAFOND_JOUR = parseInt(process.env.PROSPECT_PLAFOND || '25', 10); // e-mails par jour au maximum
 const GIF = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
 const UUID = /^[0-9a-f-]{36}$/i;
 
@@ -123,10 +124,17 @@ export default async function handler(req, res) {
     if (!safeEq(String(req.headers['x-ingest-key'] || ''), INGEST_KEY)) return json(res, 401, { error: 'clé' });
 
     if (a === 'due') {
-      const n = Math.min(Math.max(parseInt(req.query.n || '25', 10) || 25, 1), 60);
+      const n = Math.min(Math.max(parseInt(req.query.n || '1', 10) || 1, 1), 60);
+      // plafond quotidien (heure de Paris) pour ménager la réputation de contact@
+      const [{ c }] = await sql`select count(*)::int c from prospect_events where action = 'envoi'
+                                and at >= (date_trunc('day', now() at time zone 'Europe/Paris') at time zone 'Europe/Paris')`;
+      const reste = Math.max(0, PLAFOND_JOUR - c);
+      if (!reste) return json(res, 200, { items: [], plafond: PLAFOND_JOUR, envoyes_aujourdhui: c });
       const rows = await sql`select * from prospects where status = 'actif' and step < 3 and next_at <= now()
-                             order by step desc, created_at limit ${n}`;
-      return json(res, 200, { items: rows.map((p) => { const step = p.step + 1; const m = contenu(p, step); return { id: p.id, to: p.email, step, thread_id: p.thread_id, message_id: p.message_id, subject: m.sujet, text: m.text, html: m.html }; }) });
+                             order by step desc, created_at limit ${Math.min(n, reste)}`;
+      const items = rows.map((p) => { const step = p.step + 1; const m = contenu(p, step); return { id: p.id, to: p.email, step, thread_id: p.thread_id, message_id: p.message_id, subject: m.sujet, text: m.text, html: m.html }; });
+      // le premier élément est aussi renvoyé à plat pour Make (un envoi par exécution)
+      return json(res, 200, { items, ...(items[0] || {}), envoyes_aujourdhui: c });
     }
     if (a === 'sent') {
       const b = await readBody(req);
@@ -144,6 +152,26 @@ export default async function handler(req, res) {
         where id = ${b.id} and step = ${step - 1} returning id`;
       if (r.length) await ev(b.id, 'envoi', 'étape ' + step);
       return json(res, 200, { ok: r.length > 0 });
+    }
+    if (a === 'inbox') {
+      // Make transmet chaque message reçu (recherche Gmail) : réponse d'un prospect, erreur d'envoi ou autre.
+      const b = await readBody(req);
+      const from = String(b.from || '').toLowerCase();
+      const snippet = String(b.snippet || '').slice(0, 500);
+      const thread = String(b.thread_id || '');
+      if (/mailer-daemon|postmaster|mail delivery/.test(from)) {
+        const emails = (snippet + ' ' + String(b.subject || '')).toLowerCase().match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g) || [];
+        const r = await sql`update prospects set status = 'bounce' where status <> 'bounce' and (lower(email) = any(${emails}) or (${thread} <> '' and thread_id = ${thread})) returning id, nom, email`;
+        for (const p of r) await ev(p.id, 'erreur', snippet.slice(0, 300));
+        return json(res, 200, { type: 'erreur', nouveau: r.length > 0, prospect: r[0] || null });
+      }
+      const m = from.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/);
+      if (!m || m[0].endsWith('@reseauartisansfrance.com')) return json(res, 200, { type: 'ignore', nouveau: false });
+      const r = await sql`update prospects set status = 'repondu', replied_at = now(), reply_snippet = ${snippet}
+                          where status in ('actif','termine') and (lower(email) = ${m[0]} or (${thread} <> '' and thread_id = ${thread}))
+                          returning id, nom, ville, email`;
+      for (const p of r) await ev(p.id, 'reponse', snippet.slice(0, 300));
+      return json(res, 200, { type: r.length ? 'reponse' : 'autre', nouveau: r.length > 0, prospect: r[0] || null, extrait: snippet });
     }
     if (a === 'reply' || a === 'bounce') {
       const b = await readBody(req);
