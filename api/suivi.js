@@ -88,15 +88,42 @@ async function upsertLead(d, by) {
   return { id: r[0].id, created: true };
 }
 
+// ---------- encaissements ----------
+// Une fiche peut avoir plusieurs lignes datées (lead_payments) ; leads.montant en est alors le total.
+// Une fiche sans ligne garde l'ancien fonctionnement : montant compté à la date de fin d'intervention.
+// seedPayment transforme cet ancien montant en 1re ligne, juste avant d'en ajouter une autre.
+const seedPayment = (id) => sql`insert into lead_payments(lead_id, paid_at, montant, libelle, by_user)
+    select l.id, coalesce(l.termine_at, l.statut_at, l.created_at)::date, l.montant, 'Montant déjà saisi', 'reprise'
+    from leads l where l.id = ${id} and coalesce(l.montant, 0) <> 0
+      and not exists (select 1 from lead_payments p where p.lead_id = l.id)`;
+const lockLead = (id) => sql`select id from leads where id = ${id} for update`;
+const totalPayments = (id, by) => sql`update leads set montant = (select sum(montant) from lead_payments where lead_id = ${id}),
+    updated_at = now(), updated_by = ${by} where id = ${id}`;
+
 // ---------- tableau de bord ----------
 async function dashboard(from, to) {
   const f = from || '2000-01-01', t = to || '2100-01-01';
   const leads = await sql`select source, statut, count(*)::int n from leads
     where created_at >= ${f}::date and created_at < (${t}::date + 1) group by source, statut`;
-  const done = await sql`select l.id, l.termine_at, l.created_at, l.source, l.ville, l.nom, l.besoin, l.montant, l.frais_gasoil, l.frais_materiel, l.frais_autres, l.avis_demande,
-      (select count(*)::int from lead_photos p where p.lead_id = l.id) photos
-    from leads l where statut = 'termine' and coalesce(termine_at, created_at) >= ${f}::date and coalesce(termine_at, created_at) < (${t}::date + 1)
-    order by coalesce(termine_at, created_at)`;
+  // CA : chaque encaissement compte à sa date. Frais et « intervention » : une seule fois, à la fin de l'intervention.
+  const done = await sql`with x as (
+      select l.*,
+        (l.statut = 'termine' and coalesce(l.termine_at, l.created_at) >= ${f}::date and coalesce(l.termine_at, l.created_at) < (${t}::date + 1)) fini,
+        exists (select 1 from lead_payments p where p.lead_id = l.id) a_lignes,
+        v.encaisse, v.dernier
+      from leads l left join lateral (
+        select sum(p.montant) encaisse, max(p.paid_at) dernier from lead_payments p
+        where p.lead_id = l.id and p.paid_at >= ${f}::date and p.paid_at <= ${t}::date) v on true)
+    select id, created_at, source, ville, nom, besoin, avis_demande, fini,
+      case when fini then coalesce(termine_at, created_at) else dernier::timestamptz + interval '12 hours' end date_ligne,
+      case when a_lignes then coalesce(encaisse, 0) when fini then montant end montant,
+      montant total,
+      case when fini then frais_gasoil else 0 end frais_gasoil,
+      case when fini then frais_materiel else 0 end frais_materiel,
+      case when fini then frais_autres else 0 end frais_autres,
+      (select count(*)::int from lead_photos ph where ph.lead_id = x.id) photos
+    from x where fini or dernier is not null
+    order by date_ligne`;
   const spend = await sql`select day, platform, sum(amount)::float amount, bool_or(estimated) est from ad_spend
     where day >= ${f}::date and day <= ${t}::date group by day, platform order by day`;
   return { leads, done, spend, commission_rate: COMMISSION };
@@ -172,7 +199,9 @@ export default async function handler(req, res) {
         if (!r.length) return send(res, 404, { error: 'introuvable' });
         const photos = await sql`select id, created_at, by_user from lead_photos where lead_id = ${b.id} order by created_at`;
         const events = await sql`select at, by_user, action, detail from lead_events where lead_id = ${b.id} order by at desc limit 50`;
-        return send(res, 200, { lead: r[0], photos, events });
+        const payments = await sql`select id, to_char(paid_at, 'YYYY-MM-DD') paid_at, montant, libelle, by_user from lead_payments
+          where lead_id = ${b.id} order by lead_payments.paid_at, created_at`;
+        return send(res, 200, { lead: r[0], photos, events, payments });
       }
       case 'create': {
         const out = await upsertLead({ ...b.lead, source: b.lead?.source || 'inconnu' }, me.name);
@@ -206,7 +235,7 @@ export default async function handler(req, res) {
         const termineAt = next.statut === 'termine' ? (p.termine_at ? new Date(p.termine_at) : c.termine_at || new Date()) : null;
         const avisAt = next.avis_demande ? (c.avis_at || new Date()) : null;
         await sql`update leads set statut = ${next.statut}, statut_at = ${statutChange ? new Date() : c.statut_at}, source = ${next.source},
-            rdv_at = ${next.rdv_at}, relance_at = ${next.relance_at}, nb_relances = ${nbRelances}, montant = ${next.montant}, frais_gasoil = ${next.frais_gasoil}, frais_materiel = ${next.frais_materiel},
+            rdv_at = ${next.rdv_at}, relance_at = ${next.relance_at}, nb_relances = ${nbRelances}, montant = case when exists (select 1 from lead_payments p where p.lead_id = leads.id) then leads.montant else ${next.montant}::numeric end, frais_gasoil = ${next.frais_gasoil}, frais_materiel = ${next.frais_materiel},
             frais_autres = ${next.frais_autres}, frais_detail = ${next.frais_detail}, avis_demande = ${next.avis_demande}, avis_at = ${avisAt},
             note = ${next.note}, ville = ${next.ville}, nom = ${next.nom}, besoin = ${next.besoin}, telephone = ${next.telephone},
             termine_at = ${termineAt}, updated_at = now(), updated_by = ${me.name} where id = ${b.id}`;
@@ -218,6 +247,42 @@ export default async function handler(req, res) {
         if (next.avis_demande !== c.avis_demande) changes.push('avis demandé : ' + (next.avis_demande ? 'oui' : 'non'));
         if (+new Date(next.rdv_at || 0) !== +new Date(c.rdv_at || 0)) changes.push('intervention : ' + (next.rdv_at ? new Date(next.rdv_at).toISOString() : '—'));
         if (changes.length) await logEvent(b.id, me.name, 'modif', changes.join(' · '));
+        return send(res, 200, { ok: true });
+      }
+      case 'payment_add': {
+        const montant = num(String(b.montant ?? '').replace(/\s/g, '').replace(',', '.'));
+        const jour = String(b.paid_at || '');
+        if (!montant) return send(res, 400, { error: 'Montant invalide' });
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(jour) || isNaN(new Date(jour))) return send(res, 400, { error: 'Date invalide' });
+        const c = await sql`select id from leads where id = ${b.id}`;
+        if (!c.length) return send(res, 404, { error: 'introuvable' });
+        const libelle = txt(b.libelle, 80) || 'Encaissement';
+        await sql.transaction([
+          lockLead(b.id),
+          seedPayment(b.id),
+          sql`insert into lead_payments(lead_id, paid_at, montant, libelle, by_user) values (${b.id}, ${jour}, ${montant}, ${libelle}, ${me.name})`,
+          totalPayments(b.id, me.name),
+        ]);
+        await logEvent(b.id, me.name, 'encaissement', `${libelle} : ${montant} € le ${jour.split('-').reverse().join('/')}`);
+        return send(res, 200, { ok: true });
+      }
+      case 'payment_delete': {
+        if (b.payment_id === 'ancien') {
+          // montant saisi avant les lignes d'encaissement
+          const r = await sql`update leads l set montant = null, updated_at = now(), updated_by = ${me.name}
+            from leads o where o.id = l.id and l.id = ${b.id}
+              and not exists (select 1 from lead_payments p where p.lead_id = l.id) returning o.montant`;
+          if (r.length) await logEvent(b.id, me.name, 'encaissement', `Montant retiré : ${r[0].montant} €`);
+          return send(res, 200, { ok: true });
+        }
+        const r = await sql`select montant, libelle from lead_payments where id = ${b.payment_id} and lead_id = ${b.id}`;
+        if (!r.length) return send(res, 404, { error: 'introuvable' });
+        await sql.transaction([
+          lockLead(b.id),
+          sql`delete from lead_payments where id = ${b.payment_id} and lead_id = ${b.id}`,
+          totalPayments(b.id, me.name),
+        ]);
+        await logEvent(b.id, me.name, 'encaissement', `Ligne retirée : ${r[0].libelle} ${r[0].montant} €`);
         return send(res, 200, { ok: true });
       }
       case 'photo': {
@@ -243,6 +308,9 @@ export default async function handler(req, res) {
         const notes = [B.note, A.note].filter(Boolean).join('\n');
         const msgs = [B.message, A.message].filter(Boolean).join('\n');
         const montant = A.montant != null && B.montant != null ? sum('montant') : pick('montant');
+        // chaque montant garde sa date : on en fait des lignes avant de regrouper les fiches
+        const lignes = await sql`select 1 from lead_payments where lead_id in (${A.id}, ${B.id}) limit 1`;
+        if (lignes.length || (+A.montant && +B.montant)) await sql.transaction([seedPayment(A.id), seedPayment(B.id)]);
         await sql`update leads set
             nom = ${pick('nom')}, telephone = ${pick('telephone')}, autres_tel = ${[...tels].join(', ') || null},
             ville = ${pick('ville')}, besoin = ${pick('besoin')}, campagne = ${pick('campagne')}, lead_type = ${pick('lead_type')},
@@ -256,6 +324,7 @@ export default async function handler(req, res) {
             termine_at = ${statut === 'termine' ? pick('termine_at') || new Date() : null},
             note = ${notes || null}, message = ${msgs || null}, updated_at = now(), updated_by = ${me.name}
           where id = ${B.id}`;
+        await sql`update lead_payments set lead_id = ${B.id} where lead_id = ${A.id}`;
         await sql`update lead_photos set lead_id = ${B.id} where lead_id = ${A.id}`;
         await sql`update lead_events set lead_id = ${B.id} where lead_id = ${A.id}`;
         await sql`delete from leads where id = ${A.id}`;
