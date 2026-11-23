@@ -238,7 +238,7 @@ function logout(){store('raf_s');S.token=null;$('#app').classList.add('hide');$(
 
 /* ---------- liste ---------- */
 const FILTERS=[['todo','À traiter',l=>['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],['relancer','À relancer',l=>l.statut==='relancer'],
-  ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Facturés',l=>l.statut==='termine'],['all','Tous',()=>true]];
+  ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Facturés',l=>l.statut==='termine'],['faux','Faux leads',l=>l.statut==='faux'],['all','Tous',()=>true]];
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[\s.\-]/g,'');
 function drawFilters(){$('#filters').innerHTML=FILTERS.map(([k,l,f])=>`<button class="chip ${S.filter===k?'on':''}" data-f="${k}">${l}<b>${S.leads.filter(f).length}</b></button>`).join('')}
 function drawList(){
