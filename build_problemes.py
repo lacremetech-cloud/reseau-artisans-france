@@ -83,6 +83,18 @@ LIEUX = [None,
          dict(ville="Valence", cp="26000", slug="valence", page="plombier-valence"),
          dict(ville="Grenoble", cp="38000", slug="grenoble", page="plombier-grenoble")]
 
+# Villes en plus, seulement pour le débouchage (gros chantiers facturés : Romans, pays voironnais…)
+LIEUX_DEBOUCHAGE = [dict(ville="Romans-sur-Isère", cp="26100", slug="romans-sur-isere", page="plombier-romans-sur-isere"),
+                    dict(ville="Voiron", cp="38500", slug="voiron", page="plombier-voiron"),
+                    dict(ville="Montélimar", cp="26200", slug="montelimar", page="plombier-montelimar"),
+                    dict(ville="Tournon-sur-Rhône", cp="07300", slug="tournon-sur-rhone", page="plombier-tournon-sur-rhone"),
+                    dict(ville="Vienne", cp="38200", slug="vienne", page="plombier-vienne"),
+                    dict(ville="Annonay", cp="07100", slug="annonay", page="plombier-annonay")]
+
+
+def lieux(p):
+    return LIEUX + (LIEUX_DEBOUCHAGE if p["slug"] == "debouchage" else [])
+
 
 def base():
     s = open(os.path.join(HERE, "index.html"), encoding="utf-8").read()
@@ -112,9 +124,9 @@ def page(p, lieu):
     if V:
         s = s.replace("<span data-ville>Valence</span>", f"<span data-ville>{V}</span>")
     # Bloc problème avant les urgences
-    others = " · ".join(f'<a href="../{q["slug"]}{("-" + lieu["slug"]) if lieu else ""}/">{q["nom"]}</a>' for q in PROBLEMES if q is not p)
+    others = " · ".join(f'<a href="../{q["slug"]}{("-" + lieu["slug"]) if lieu and lieu in lieux(q) else ""}/">{q["nom"]}</a>' for q in PROBLEMES if q is not p)
     villes = (f'<a href="../{lieu["page"]}/">Plombier à {V}</a>' if lieu else
-              " · ".join(f'<a href="../{p["slug"]}-{l["slug"]}/">{p["nom"]} à {l["ville"]}</a>' for l in LIEUX if l))
+              " · ".join(f'<a href="../{p["slug"]}-{l["slug"]}/">{p["nom"]} à {l["ville"]}</a>' for l in lieux(p) if l))
     bloc = f'''<section id="probleme">
     <div class="wrap">
       <h2>{p["nom"]}{where} : on s'en occupe</h2>
@@ -182,7 +194,7 @@ if __name__ == "__main__":
         open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(build_villes.page(v))
     slugs = [v["slug"] for v in build_villes.VILLES]
     for p in PROBLEMES:                        # 3. pages problème
-        for lieu in LIEUX:
+        for lieu in lieux(p):
             slug, html = page(p, lieu)
             d = os.path.join(HERE, slug); os.makedirs(d, exist_ok=True)
             open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(html)
