@@ -237,7 +237,7 @@ function buildPad(){
 function logout(){store('raf_s');S.token=null;$('#app').classList.add('hide');$('#sheet').classList.add('hide');$('#login').classList.remove('hide');pin='';drawDots()}
 
 /* ---------- liste ---------- */
-const FILTERS=[['todo','À traiter',l=>['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],['relancer','À relancer',l=>l.statut==='relancer'],
+const FILTERS=[['todo','À traiter',l=>['nouveau','relancer','rappele','devis','planifie'].includes(l.statut)],['nouveau','Nouveaux',l=>l.statut==='nouveau'],['relancer','À relancer',l=>['relancer','devis'].includes(l.statut)],
   ['planifie','Planifiés',l=>l.statut==='planifie'],['termine','Facturés',l=>l.statut==='termine'],['faux','Faux leads',l=>l.statut==='faux'],['all','Tous',()=>true]];
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[\s.\-]/g,'');
 function drawFilters(){$('#filters').innerHTML=FILTERS.map(([k,l,f])=>`<button class="chip ${S.filter===k?'on':''}" data-f="${k}">${l}<b>${S.leads.filter(f).length}</b></button>`).join('')}
@@ -249,7 +249,7 @@ function drawList(){
   $('#qinfo').classList.toggle('hide',!q);$('#qclear').classList.toggle('hide',!S.q);
   if(q)$('#qinfo').textContent=rows.length+' résultat'+(rows.length>1?'s':'')+' dans tous les clients';
   $('#filters').style.opacity=q?'.45':'1';
-  if(S.filter==='relancer'&&!q)rows.sort((a,b)=>new Date(a.relance_at||a.created_at)-new Date(b.relance_at||b.created_at));
+  if(S.filter==='relancer'&&!q)rows.sort((a,b)=>new Date(a.relance_at||(a.statut==='devis'&&a.statut_at)||a.created_at)-new Date(b.relance_at||(b.statut==='devis'&&b.statut_at)||b.created_at));
   if(S.filter==='planifie')rows.sort((a,b)=>new Date(a.rdv_at||0)-new Date(b.rdv_at||0));
   $('#list').innerHTML=rows.length?rows.map(l=>`
    <div class="card lead ${l.statut==='nouveau'?'new':''}" data-id="${l.id}">
@@ -258,6 +258,7 @@ function drawList(){
      <div class="sub">${esc([l.nom&&fmtTel(l.telephone),l.ville].filter(Boolean).join(' · '))}</div>
      <div class="resume">${esc(resume(l))}</div>
      ${l.statut==='relancer'?`<div class="sub" style="color:#c2410c;font-weight:700;margin-top:4px">📵 Pas répondu${l.nb_relances?' · '+l.nb_relances+' tentative'+(l.nb_relances>1?'s':''):''}${l.relance_at?' · rappeler '+dt(l.relance_at):''}</div>`:''}
+     ${l.statut==='devis'?`<div class="sub" style="color:var(--warn);font-weight:700;margin-top:4px">📄 Devis envoyé${l.statut_at?' le '+dt(l.statut_at):''} · en attente de réponse${l.relance_at?' · relancer '+dt(l.relance_at):''}</div>`:''}
      ${l.statut==='planifie'&&l.rdv_at?`<div class="sub" style="color:#5b3fd1;font-weight:700;margin-top:4px">📅 ${dt(l.rdv_at)}</div>`:''}
      ${l.statut==='termine'?`<div class="sub" style="margin-top:4px">${l.montant!=null?'💶 '+eur(l.montant):'⚠️ Montant facturé à remplir'}${l.photos?' · 📷 '+l.photos:''} · ${l.avis_demande?'⭐ avis demandé':'avis pas demandé'}</div>`:''}
      ${l.statut!=='termine'&&+l.montant?`<div class="sub" style="margin-top:4px">💶 ${eur(l.montant)} encaissés</div>`:''}
